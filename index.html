@@ -2,753 +2,464 @@
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ご注文フォーム</title>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ご注文フォーム</title>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    /* ===============================
+       Calm & Elegant Theme
+       - 落ち着いた配色・最小限アニメーション
+       - 可読性と余白重視、アクセシビリティ改善
+       - アクセントカラーにご指定 #ffdddd を使用
+       =============================== */
 
-        :root {
-            --primary: #ec4899;
-            --primary-light: #f472b6;
-            --secondary: #be185d;
-            --accent: #db2777;
-            --dark: #831843;
-            --light: #ffffff;
-            --gray-50: #fdf2f8;
-            --gray-100: #fce7f3;
-            --gray-200: #fbcfe8;
-            --gray-300: #f9a8d4;
-            --gray-400: #f472b6;
-            --gray-500: #ec4899;
-            --gray-600: #db2777;
-            --gray-700: #be185d;
-            --gray-800: #9d174d;
-            --blue-50: #fef7ff;
-            --blue-100: #fae8ff;
-            --blue-500: #f472b6;
-            --green-50: #fdf2f8;
-            --green-500: #f472b6;
-            --pink-50: #fdf2f8;
-            --pink-500: #ec4899;
-            --shadow: 0 1px 3px 0 rgba(236, 72, 153, 0.1), 0 1px 2px 0 rgba(236, 72, 153, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(236, 72, 153, 0.1), 0 4px 6px -2px rgba(236, 72, 153, 0.05);
-        }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    :root {
+      /* Base neutrals */
+      --bg: #f6f6f6;
+      --panel: #ffffff;
+      --ink-900: #111827; /* text */
+      --ink-700: #374151; /* heading/sub */
+      --ink-500: #6b7280; /* muted */
+      --line: #e5e7eb;    /* borders */
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--gray-50) 0%, #fce7f3 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 2rem 1rem;
-            line-height: 1.6;
-            color: var(--gray-700);
-        }
+      /* Accent (soft pink as requested) */
+      --accent-50: #fffbfc;
+      --accent-100: #ffefef; /* ≈ #ffdddd より僅かに淡く背景用 */
+      --accent-200: #ffdddd; /* リクエスト色 */
+      --accent-300: #f6c8c8;
+      --accent-500: #df9b9b; /* ボタン/フォーカス */
+      --accent-600: #c57f7f; /* hover */
 
-        .container {
-            background: var(--light);
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            width: 100%;
-            max-width: 600px;
-            padding: 3rem;
-            position: relative;
-            border: 1px solid var(--gray-200);
-            backdrop-filter: blur(10px);
-        }
+      /* Shadows */
+      --shadow: 0 2px 10px rgba(17, 24, 39, 0.06);
+      --shadow-lg: 0 8px 28px rgba(17, 24, 39, 0.08);
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
-            border-radius: 20px 20px 0 0;
-        }
+      /* Radii */
+      --r-md: 12px;
+      --r-lg: 16px;
 
-        h1 {
-            color: var(--gray-800);
-            font-size: 2.25rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 2rem;
-            letter-spacing: -0.025em;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+      /* Motion */
+      --ease: cubic-bezier(.2,.7,.2,1);
+    }
 
-        .section-header {
-            display: block;
-            margin: 3rem 0 1.5rem;
-            padding: 1.25rem 2rem;
-            font-weight: 700;
-            font-size: 1.125rem;
-            text-align: center;
-            color: var(--light);
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
 
-        .section-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+      color: var(--ink-900);
+      background: linear-gradient(180deg, var(--bg) 0%, #ffffff 100%);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 32px 16px;
+      display: grid;
+      place-items: start center;
+    }
 
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
+    .container {
+      width: min(720px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-lg);
+      border-radius: var(--r-lg);
+      padding: clamp(20px, 3vw, 32px);
+      position: relative;
+    }
 
-        .label {
-            display: block;
-            margin: 2rem 0 1rem;
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
-            border-radius: 16px;
-            font-size: 1rem;
-            text-align: center;
-            color: var(--gray-800);
-            border: 1px solid var(--gray-200);
-            transition: all 0.3s ease-in-out;
-        }
+    .container::before {
+      content: "";
+      position: absolute; inset: 0 0 auto 0; height: 6px;
+      background: linear-gradient(90deg, var(--accent-200), var(--accent-300));
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+    }
 
-        .label:hover {
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15);
-            transform: translateY(-2px);
-        }
+    h1 {
+      margin: 8px 0 20px;
+      font-size: clamp(22px, 3.2vw, 28px);
+      font-weight: 700;
+      letter-spacing: .01em;
+      color: var(--ink-700);
+    }
 
-        .required {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            color: white;
-            font-weight: 500;
-            font-size: 0.75rem;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            margin-right: 0.75rem;
-            display: inline-block;
-            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
-        }
+    .section-header {
+      display: block;
+      margin: 28px 0 12px;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--ink-700);
+      background: linear-gradient(180deg, var(--accent-100), #fff);
+      border: 1px solid var(--accent-200);
+      border-radius: var(--r-md);
+    }
 
-        .optional {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            color: #64748b;
-            font-weight: 500;
-            font-size: 0.75rem;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            margin-right: 0.75rem;
-            display: inline-block;
-            box-shadow: 0 2px 8px rgba(148, 163, 184, 0.15);
-            border: 1px solid #e2e8f0;
-        }
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--ink-700);
+      background: #fff;
+      margin-right: 8px;
+    }
+    .chip.required { border-color: #ef4444; color: #ef4444; background: #fff5f5; }
+    .chip.optional { color: var(--ink-500); }
 
-        input[type="text"],
-        input[type="tel"],
-        textarea {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            font-size: 1rem;
-            font-family: inherit;
-            background-color: var(--light);
-            transition: all 0.3s ease-in-out;
-            resize: vertical;
-            min-height: 48px;
-            color: var(--gray-700);
-        }
+    .info-text {
+      margin: 8px 0 16px;
+      padding: 12px 14px;
+      background: var(--accent-50);
+      border: 1px dashed var(--accent-200);
+      border-radius: var(--r-md);
+      color: var(--ink-700);
+      font-size: 14px;
+    }
 
-        input[type="text"]:focus,
-        input[type="tel"]:focus,
-        textarea:focus {
-            border-color: var(--primary);
-            background-color: var(--gray-50);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.1);
-            transform: translateY(-1px);
-        }
+    label.label {
+      display: block;
+      margin: 18px 0 8px;
+      font-weight: 600;
+      color: var(--ink-700);
+      font-size: 14px;
+    }
 
-        .postal-input-container {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
-        }
+    input[type="text"], input[type="tel"], textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      font-size: 16px;
+      background: #fff;
+      color: var(--ink-900);
+      transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-500);
+      box-shadow: 0 0 0 4px rgba(223, 155, 155, .18);
+    }
 
-        .postal-input {
-            flex: 1;
-        }
+    .grid-buttons {
+      display: grid; gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      margin: 10px 0 14px;
+    }
 
-        .postal-search-btn {
-            padding: 1rem 1.5rem;
-            background: linear-gradient(135deg, var(--accent), var(--primary));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
-            min-height: 48px;
-            white-space: nowrap;
-        }
+    .btn-option {
+      appearance: none; cursor: pointer;
+      padding: 12px 14px; min-height: 44px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      font-size: 14px; font-weight: 600; color: var(--ink-700);
+      display: inline-flex; align-items: center; justify-content: center; text-align: center;
+      transition: transform .05s var(--ease), border-color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .btn-option:hover { border-color: var(--accent-300); background: var(--accent-50); }
+    .btn-option:active { transform: translateY(1px); }
+    .btn-option.active { border-color: var(--accent-500); background: var(--accent-100); box-shadow: inset 0 0 0 1px var(--accent-500); }
 
-        .postal-search-btn:hover {
-            background: linear-gradient(135deg, var(--secondary), var(--dark));
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
-        }
+    .postal-input-container { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
 
-        .postal-search-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
+    .btn-accent {
+      appearance: none; cursor: pointer;
+      padding: 12px 16px; min-height: 44px; width: 100%;
+      border: 1px solid var(--accent-500);
+      background: linear-gradient(180deg, var(--accent-500), var(--accent-600));
+      color: #fff; font-weight: 700; font-size: 16px;
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow);
+      transition: transform .06s var(--ease), filter .2s var(--ease);
+    }
+    .btn-accent:hover { filter: brightness(1.02); }
+    .btn-accent:active { transform: translateY(1px); }
+    .btn-accent:disabled { opacity: .55; cursor: not-allowed; }
 
-        .one-buttons, .two-buttons, .first-time-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.75rem;
-            margin: 1.5rem 0 2rem;
-        }
+    .btn-subtle {
+      appearance: none; cursor: pointer;
+      padding: 12px 14px; min-height: 44px;
+      border: 1px solid var(--line);
+      background: #fff; color: var(--ink-700);
+      border-radius: var(--r-md);
+      font-weight: 600; font-size: 14px;
+      transition: border-color .2s var(--ease), background .2s var(--ease);
+    }
+    .btn-subtle:hover { background: var(--accent-50); border-color: var(--accent-300); }
 
-        .first-time-buttons {
-            grid-template-columns: repeat(2, 1fr);
-        }
+    .side-nav {
+      position: fixed; right: 12px; top: 50%; transform: translateY(-50%);
+      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 8px;
+      box-shadow: var(--shadow);
+    }
+    .side-nav a { display: grid; place-items: center; width: 44px; height: 44px; text-decoration: none; color: var(--ink-700); border-radius: 10px; font-size: 18px; }
+    .side-nav a:hover { background: var(--accent-100); }
 
-        .one-buttons button, .two-buttons button, .first-time-buttons button {
-            padding: 1rem 1.25rem;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--light), var(--gray-50));
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--gray-600);
-            transition: all 0.3s ease-in-out;
-            min-height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+    .error-message { color: #b91c1c; font-size: 13px; margin-top: 6px; }
+    .hidden { display: none !important; }
 
-        .one-buttons button:hover, .two-buttons button:hover, .first-time-buttons button:hover {
-            border-color: var(--gray-300);
-            background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
-            color: var(--gray-700);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15);
-        }
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
-        .active {
-            background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
-            color: white !important;
-            border-color: var(--primary) !important;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4) !important;
-        }
+    @media (max-width: 768px) {
+      body { padding: 20px 12px; }
+      .container { padding: 20px; }
+      .side-nav { right: 8px; }
+      .side-nav a { width: 40px; height: 40px; }
+    }
+      /* Mobile-first refinements */
+    @media (max-width: 640px) {
+      html, body { font-size: 16px; } /* iOSズーム抑止 */
+      body { padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) calc(84px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+      .container { border-radius: 14px; padding: 16px; }
+      .grid-buttons { grid-template-columns: 1fr; }
+      .side-nav { display: none; }
+    }
 
-        .active:hover {
-            background: linear-gradient(135deg, var(--accent), var(--secondary)) !important;
-            border-color: var(--accent) !important;
-            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5) !important;
-        }
+    /* Bottom fixed submit bar */
+    .footer-cta {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 10px max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+      background: rgba(255,255,255,.85);
+      backdrop-filter: saturate(140%) blur(10px);
+      border-top: 1px solid var(--line);
+      box-shadow: 0 -6px 24px rgba(17,24,39,.06);
+      z-index: 50;
+    }
+    .footer-cta .btn-accent { width: 100%; }
 
-        .submit-button {
-            width: 100%;
-            padding: 1.25rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, var(--accent), var(--primary));
-            color: white;
-            border: none;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            margin-top: 2rem;
-            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .submit-button:hover {
-            background: linear-gradient(135deg, var(--secondary), var(--dark));
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
-        }
-
-        .info-text {
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
-            border-radius: 16px;
-            border-left: 4px solid var(--primary);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: var(--gray-700);
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.1);
-        }
-
-        .side-nav {
-            position: fixed;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(135deg, var(--light), var(--gray-50));
-            padding: 1rem;
-            border-radius: 20px;
-            z-index: 1000;
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.2);
-            border: 1px solid var(--gray-200);
-            backdrop-filter: blur(10px);
-        }
-
-        .side-nav a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray-600);
-            text-decoration: none;
-            font-size: 0.75rem;
-            padding: 0.75rem;
-            transition: all 0.3s ease-in-out;
-            border-radius: 12px;
-            width: 48px;
-            height: 48px;
-        }
-
-        .side-nav a:hover {
-            background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
-            color: var(--primary);
-            transform: scale(1.05);
-        }
-
-        .side-nav a span {
-            font-size: 1.25rem;
-            margin-bottom: 0.125rem;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error-message {
-            color: #dc2626;
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .first-time-section {
-            transition: all 0.5s ease-in-out;
-            overflow: hidden;
-        }
-
-        .slide-in {
-            animation: slideInFromBottom 0.6s ease-out forwards;
-        }
-
-        @keyframes slideInFromBottom {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 2rem 1.5rem;
-                margin: 1rem;
-                border-radius: 16px;
-            }
-
-            h1 {
-                font-size: 1.875rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .section-header {
-                margin: 2.5rem 0 1rem;
-                padding: 1rem 1.5rem;
-                font-size: 1rem;
-                border-radius: 12px;
-            }
-
-            .one-buttons, .two-buttons, .first-time-buttons {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-
-            .postal-input-container {
-                flex-direction: column;
-            }
-
-            .postal-search-btn {
-                width: 100%;
-            }
-
-            .side-nav {
-                right: 0.5rem;
-                padding: 0.75rem;
-                border-radius: 16px;
-            }
-
-            .side-nav a {
-                width: 40px;
-                height: 40px;
-                font-size: 0.7rem;
-                border-radius: 8px;
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .container {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .section-header {
-            animation: float 6s ease-in-out infinite;
-        }
-    </style>
+    /* Touch adjustments */
+    * { -webkit-tap-highlight-color: transparent; }
+    .btn-option, .btn-subtle, .btn-accent { touch-action: manipulation; }
+  </style>
 </head>
 
 <body>
-    <!-- 右側の追従ナビ -->
-    <div class="side-nav" id="sideNav">
-        <a href="#section-message">
-            <span>⇩</span>
-            <i class="fas fa-comment"></i>
-        </a>
+  <!-- 右側の追従ナビ -->
+  <!-- スマホではサイドナビは非表示（CSSで制御） -->
+<nav class="side-nav" aria-label="ページ内ナビゲーション">
+  <a href="#section-message" title="送信へ移動"><span aria-hidden>⇩</span></a>
+</nav>
+
+  <main class="container" role="main">
+    <h1>ご注文ページ</h1>
+
+    <!-- お名前 -->
+    <div class="section-header"><span class="chip required">必須</span>お名前をお願いします</div>
+    <p class="info-text">LINEとは連動していないため、お手数ですがお名前の記載をお願いいたします。</p>
+    <label class="label" for="lastName">姓</label>
+    <input type="text" id="lastName" placeholder="姓" autocomplete="family-name" />
+    <label class="label" for="firstName">名</label>
+    <input type="text" id="firstName" placeholder="名" autocomplete="given-name" />
+
+    <!-- ご注文内容 -->
+    <div class="section-header"><span class="chip optional">任意</span>ご注文の商品をご記入ください</div>
+    <p class="info-text">・商品名、色番号<br />・数量<br />・その他ご不明な点があれば何でもどうぞ</p>
+    <label class="label" for="orderDetails">ご注文内容</label>
+    <textarea id="orderDetails" rows="4" placeholder="ご注文内容をご記入ください"></textarea>
+
+    <!-- 支払い方法 -->
+    <div class="section-header"><span class="chip required">必須</span>お支払い方法を選んでください</div>
+    <div class="grid-buttons" role="group" aria-label="お支払い方法">
+      <button type="button" class="btn-option one" onclick="selectPayment(this)">paypay</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)">銀行振込</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)">クレジットカード</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)">店頭支払</button>
     </div>
 
-    <div class="container">
-        <h1>ご注文ページ</h1>
-        
-        <div class="section-header"><span class="required">必須</span>お名前をお願いします</div>
-        <div class="info-text">LINEとは連動してませんのでお手数ですがお名前の記載お願いします</div>
-        <input type="text" id="lastName" placeholder="姓" />
-        <input type="text" id="firstName" placeholder="名" />
-
-        <div class="section-header"><span class="optional">任意</span>ご注文の商品をご記入ください</div>
-        <div class="info-text">・商品名、色番号<br>・数量<br>・その他ご不明な点があればなんでもどうぞ</div>
-        <textarea id="orderDetails" rows="4" placeholder="ご注文内容をご記入ください"></textarea>
-
-        <div class="section-header"><span class="required">必須</span>お支払い方法を選んでください</div>
-        <div class="one-buttons">
-            <button type="button" class="one" onclick="selectPayment(this)">paypay</button>
-            <button type="button" class="one" onclick="selectPayment(this)">銀行振込</button>
-            <button type="button" class="one" onclick="selectPayment(this)">クレジットカード</button>
-            <button type="button" class="one" onclick="selectPayment(this)">店頭支払</button>
-        </div>
-
-        <div class="section-header"><span class="required">必須</span>お届け方法を選択して下さい</div>
-        <div class="two-buttons">
-            <button type="button" class="two" onclick="selectDelivery(this)">宅配（送料無料）</button>
-            <button type="button" class="two" onclick="selectDelivery(this)">店頭受け取り</button>
-        </div>
-
-        <!-- 初回注文確認セクション -->
-        <div class="section-header"><span class="required">必須</span>ご注文は初めてですか？</div>
-        <div class="first-time-buttons">
-            <button type="button" class="first-time" onclick="selectFirstTime(this, true)">はい</button>
-            <button type="button" class="first-time" onclick="selectFirstTime(this, false)">いいえ</button>
-        </div>
-
-        <!-- 初回注文者向けのセクション -->
-        <div id="firstTimeSection" class="first-time-section hidden">
-            <div class="label"><span class="required">必須</span>初回のお客様 - お電話番号</div>
-            <div class="info-text">日中連絡がつく番号でお願いします</div>
-            <input type="tel" id="phone" placeholder="電話番号を入力してください" />
-
-            <div class="label"><span class="required">必須</span>初回のお客様 - お届け先住所</div>
-            <div class="info-text">個人情報のセキュリティ管理はしっかりさせていただいております。<br>ご安心してご記入ください。</div>
-            
-            <div class="label">郵便番号</div>
-            <div class="postal-input-container">
-                <input type="text" id="postalCode" class="postal-input" placeholder="例: 1000001" maxlength="7" />
-                <button type="button" class="postal-search-btn" onclick="searchAddress()" id="searchBtn">
-                    住所検索
-                </button>
-            </div>
-            <div class="error-message" id="postalError" style="display: none;"></div>
-
-            <div class="label">都道府県</div>
-            <input type="text" id="prefecture" placeholder="都道府県" readonly />
-
-            <div class="label">市区町村</div>
-            <input type="text" id="city" placeholder="市区町村" readonly />
-
-            <div class="label">番地</div>
-            <input type="text" id="address" placeholder="番地を入力してください" />
-
-            <div class="label">マンション・ビル名</div>
-            <input type="text" id="building" placeholder="マンション・ビル名（任意）" />
-        </div>
-
-        <button class="submit-button" onclick="submitForm()" id="section-message">送信</button>
+    <!-- お届け方法 -->
+    <div class="section-header"><span class="chip required">必須</span>お届け方法を選択してください</div>
+    <div class="grid-buttons" role="group" aria-label="お届け方法">
+      <button type="button" class="btn-option two" onclick="selectDelivery(this)">宅配（送料無料）</button>
+      <button type="button" class="btn-option two" onclick="selectDelivery(this)">店頭受け取り</button>
     </div>
 
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    <script>
-        let paymentMethod = '';
-        let deliveryMethod = '';
-        let isFirstTime = null;
+    <!-- 初回注文確認 -->
+    <div class="section-header"><span class="chip required">必須</span>ご注文は初めてですか？</div>
+    <div class="grid-buttons" role="group" aria-label="初回注文かどうか">
+      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, true)">はい</button>
+      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, false)">いいえ</button>
+    </div>
 
-        // LIFF初期化
-        document.addEventListener('DOMContentLoaded', function () {
-            liff.init({
-                liffId: '2007458512-xZR3av9K' // ここにあなたのLIFF IDを入力
-            }).then(() => {
-                console.log('LIFF初期化成功');
-            }).catch((err) => {
-                console.error('LIFF初期化失敗', err);
-            });
+    <!-- 初回注文者向け -->
+    <section id="firstTimeSection" class="hidden" aria-live="polite">
+      <label class="label"><span class="chip required">必須</span>初回のお客様 - お電話番号</label>
+      <p class="info-text">日中にご連絡がつく番号をご記入ください。</p>
+      <input type="tel" id="phone"$1 inputmode="tel" autocomplete="tel" placeholder="09012345678（ハイフンなし）">
+
+      <label class="label"><span class="chip required">必須</span>初回のお客様 - お届け先住所</label>
+      <p class="info-text">個人情報は適切に管理いたします。ご安心のうえご記入ください。</p>
+
+      <label class="label" for="postalCode">郵便番号</label>
+      <div class="postal-input-container">
+        <input type="text" id="postalCode"$1 inputmode="numeric" pattern="\d{7}" placeholder="例: 1000001（7桁・ハイフン不要）">
+        <button type="button" class="btn-subtle" onclick="searchAddress()" id="searchBtn">住所検索</button>
+      </div>
+      <div class="error-message" id="postalError" style="display:none;"></div>
+
+      <label class="label" for="prefecture">都道府県</label>
+      <input type="text" id="prefecture" placeholder="都道府県" readonly />
+
+      <label class="label" for="city">市区町村</label>
+      <input type="text" id="city" placeholder="市区町村" readonly />
+
+      <label class="label" for="address">番地</label>
+      <input type="text" id="address" placeholder="番地を入力してください" />
+
+      <label class="label" for="building">マンション・ビル名（任意）</label>
+      <input type="text" id="building" placeholder="マンション・ビル名（任意）" />
+    </section>
+
+    <div style="margin-top: 20px;"></div>
+    </main>
+
+<!-- 画面下部に固定の送信バー（スマホ最適化） -->
+<div class="footer-cta">
+  <button class="btn-accent" onclick="submitForm()" id="section-message">送信</button>
+</div>
+
+<!-- 既存の </main> は上に移動済み -->
+  </main>
+
+  <!-- LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+  <script>
+    let paymentMethod = '';
+    let deliveryMethod = '';
+    let isFirstTime = null;
+
+    // LIFF初期化
+    document.addEventListener('DOMContentLoaded', function () {
+      liff.init({ liffId: '2008001634-M7wLd2zR' })
+        .then(() => console.log('LIFF初期化成功'))
+        .catch((err) => console.error('LIFF初期化失敗', err));
+    });
+
+    function selectPayment(el) {
+      document.querySelectorAll('.one').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      paymentMethod = el.innerText.trim();
+    }
+
+    function selectDelivery(el) {
+      document.querySelectorAll('.two').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      deliveryMethod = el.innerText.trim();
+    }
+
+    function selectFirstTime(el, firstTime) {
+      document.querySelectorAll('.first-time').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      isFirstTime = firstTime;
+
+      const sec = document.getElementById('firstTimeSection');
+      if (firstTime) {
+        sec.classList.remove('hidden');
+      } else {
+        sec.classList.add('hidden');
+        // フィールドクリア
+        ['phone','postalCode','prefecture','city','address','building'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.value = '';
         });
+      }
+    }
 
-        function selectPayment(element) {
-            const buttons = document.querySelectorAll('.one-buttons button');
-            buttons.forEach(button => button.classList.remove('active'));
-            element.classList.add('active');
-            paymentMethod = element.innerText;
+    async function searchAddress() {
+      const postal = document.getElementById('postalCode').value.replace(/[^\d]/g, '');
+      const errorDiv = document.getElementById('postalError');
+      const btn = document.getElementById('searchBtn');
+
+      errorDiv.style.display = 'none';
+      if (postal.length !== 7) {
+        errorDiv.textContent = '7桁の郵便番号を入力してください（例: 1000001）';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = '検索中…';
+
+      try {
+        const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postal}`);
+        const data = await res.json();
+        if (data.status === 200 && data.results && data.results.length > 0) {
+          const r = data.results[0];
+          document.getElementById('prefecture').value = r.address1;
+          document.getElementById('city').value = r.address2 + r.address3;
+          document.getElementById('address').focus();
+        } else {
+          errorDiv.textContent = '該当する住所が見つかりませんでした。郵便番号をご確認ください。';
+          errorDiv.style.display = 'block';
         }
+      } catch (e) {
+        console.error('住所検索エラー:', e);
+        errorDiv.textContent = '住所検索でエラーが発生しました。時間をおいて再度お試しください。';
+        errorDiv.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    }
 
-        function selectDelivery(element) {
-            const buttons = document.querySelectorAll('.two-buttons button');
-            buttons.forEach(button => button.classList.remove('active'));
-            element.classList.add('active');
-            deliveryMethod = element.innerText;
-        }
+    // Enter で住所検索
+    document.addEventListener('DOMContentLoaded', () => {
+      const pc = document.getElementById('postalCode');
+      pc.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchAddress(); });
+      pc.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^\d]/g, ''); });
+    });
 
-        function selectFirstTime(element, firstTime) {
-            const buttons = document.querySelectorAll('.first-time-buttons button');
-            buttons.forEach(button => button.classList.remove('active'));
-            element.classList.add('active');
-            isFirstTime = firstTime;
+    function submitForm() {
+      const formData = {
+        lastName: document.getElementById('lastName').value.trim(),
+        firstName: document.getElementById('firstName').value.trim(),
+        orderDetails: document.getElementById('orderDetails').value.trim(),
+        paymentMethod,
+        deliveryMethod,
+        isFirstTime,
+        phone: document.getElementById('phone')?.value.trim() || '',
+        postalCode: document.getElementById('postalCode')?.value.trim() || '',
+        prefecture: document.getElementById('prefecture')?.value.trim() || '',
+        city: document.getElementById('city')?.value.trim() || '',
+        address: document.getElementById('address')?.value.trim() || '',
+        building: document.getElementById('building')?.value.trim() || ''
+      };
 
-            const firstTimeSection = document.getElementById('firstTimeSection');
-            
-            if (firstTime) {
-                // 「はい」が選択された場合、初回注文者向けセクションを表示
-                firstTimeSection.classList.remove('hidden');
-                firstTimeSection.classList.add('slide-in');
-            } else {
-                // 「いいえ」が選択された場合、初回注文者向けセクションを非表示
-                firstTimeSection.classList.add('hidden');
-                firstTimeSection.classList.remove('slide-in');
-                
-                // フィールドをクリア
-                document.getElementById('phone').value = '';
-                document.getElementById('postalCode').value = '';
-                document.getElementById('prefecture').value = '';
-                document.getElementById('city').value = '';
-                document.getElementById('address').value = '';
-                document.getElementById('building').value = '';
-            }
-        }
+      // 必須チェック
+      if (!formData.lastName || !formData.firstName) { alert('お名前（姓・名）を入力してください。'); return; }
+      if (!formData.paymentMethod) { alert('お支払い方法を選択してください。'); return; }
+      if (!formData.deliveryMethod) { alert('お届け方法を選択してください。'); return; }
+      if (formData.isFirstTime === null) { alert('初回注文かどうかを選択してください。'); return; }
 
-        async function searchAddress() {
-            const postalCode = document.getElementById('postalCode').value.replace(/[^\d]/g, '');
-            const errorDiv = document.getElementById('postalError');
-            const searchBtn = document.getElementById('searchBtn');
-            
-            // エラーメッセージをクリア
-            errorDiv.style.display = 'none';
-            
-            if (postalCode.length !== 7) {
-                errorDiv.textContent = '7桁の郵便番号を入力してください（例: 1000001）';
-                errorDiv.style.display = 'block';
-                return;
-            }
+      if (formData.isFirstTime) {
+        if (!formData.phone) { alert('初回のお客様は電話番号の入力が必要です。'); return; }
+        if (!formData.postalCode || !formData.prefecture || !formData.city || !formData.address) {
+          alert('初回のお客様は住所情報の入力が必要です。'); return; }
+      }
 
-            // ボタンを無効化してローディング表示
-            searchBtn.disabled = true;
-            searchBtn.innerHTML = '<span class="loading"></span> 検索中...';
+      let messageText = '≪ご注文内容≫\n' +
+        '【お名前】\n' + formData.lastName + ' ' + formData.firstName + '\n\n' +
+        '【ご注文内容】\n' + (formData.orderDetails || '記載なし') + '\n\n' +
+        '【お支払い方法】\n' + formData.paymentMethod + '\n\n' +
+        '【お届け方法】\n' + formData.deliveryMethod + '\n\n' +
+        '【初回注文】\n' + (formData.isFirstTime ? 'はい' : 'いいえ') + '\n\n';
 
-            try {
-                const response = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postalCode}`);
-                const data = await response.json();
+      if (formData.isFirstTime) {
+        messageText += '【お電話番号】\n' + formData.phone + '\n\n' +
+          '【お届け先住所】\n' + '〒' + formData.postalCode + '\n' +
+          formData.prefecture + formData.city + '\n' +
+          formData.address + '\n' + (formData.building || '');
+      }
 
-                if (data.status === 200 && data.results && data.results.length > 0) {
-                    const result = data.results[0];
-                    
-                    // 住所情報を入力フィールドに設定
-                    document.getElementById('prefecture').value = result.address1;
-                    document.getElementById('city').value = result.address2 + result.address3;
-                    
-                    // 番地フィールドにフォーカス
-                    document.getElementById('address').focus();
-                } else {
-                    errorDiv.textContent = '該当する住所が見つかりませんでした。郵便番号を確認してください。';
-                    errorDiv.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('住所検索エラー:', error);
-                errorDiv.textContent = '住所検索でエラーが発生しました。しばらくしてから再度お試しください。';
-                errorDiv.style.display = 'block';
-            } finally {
-                // ボタンを有効化
-                searchBtn.disabled = false;
-                searchBtn.innerHTML = '住所検索';
-            }
-        }
-
-        // エンターキーで住所検索を実行
-        document.getElementById('postalCode').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchAddress();
-            }
-        });
-
-        // 郵便番号入力時に数字以外を除去
-        document.getElementById('postalCode').addEventListener('input', function(e) {
-            e.target.value = e.target.value.replace(/[^\d]/g, '');
-        });
-
-        function submitForm() {
-            const formData = {
-                lastName: document.getElementById('lastName').value,
-                firstName: document.getElementById('firstName').value,
-                orderDetails: document.getElementById('orderDetails').value,
-                paymentMethod: paymentMethod,
-                deliveryMethod: deliveryMethod,
-                isFirstTime: isFirstTime,
-                phone: document.getElementById('phone').value,
-                postalCode: document.getElementById('postalCode').value,
-                prefecture: document.getElementById('prefecture').value,
-                city: document.getElementById('city').value,
-                address: document.getElementById('address').value,
-                building: document.getElementById('building').value
-            };
-
-            // 必須項目のチェック
-            if (!formData.lastName || !formData.firstName) {
-                alert('お名前（姓・名）を入力してください。');
-                return;
-            }
-
-            if (!formData.paymentMethod) {
-                alert('お支払い方法を選択してください。');
-                return;
-            }
-
-            if (!formData.deliveryMethod) {
-                alert('お届け方法を選択してください。');
-                return;
-            }
-
-            if (formData.isFirstTime === null) {
-                alert('初回注文かどうかを選択してください。');
-                return;
-            }
-
-            // 初回注文の場合の必須項目チェック
-            if (formData.isFirstTime) {
-                if (!formData.phone) {
-                    alert('初回のお客様は電話番号の入力が必要です。');
-                    return;
-                }
-                
-                if (!formData.postalCode || !formData.prefecture || !formData.city || !formData.address) {
-                    alert('初回のお客様は住所情報の入力が必要です。');
-                    return;
-                }
-            }
-
-            // LINEトークにメッセージを送信
-            let messageText = 
-                '≪ご注文内容≫\n' +
-                '【お名前】\n' + formData.lastName + ' ' + formData.firstName + '\n\n' +
-                '【ご注文内容】\n' + (formData.orderDetails || '記載なし') + '\n\n' +
-                '【お支払い方法】\n' + formData.paymentMethod + '\n\n' +
-                '【お届け方法】\n' + formData.deliveryMethod + '\n\n' +
-                '【初回注文】\n' + (formData.isFirstTime ? 'はい' : 'いいえ') + '\n\n';
-
-            // 初回注文の場合のみ連絡先と住所を追加
-            if (formData.isFirstTime) {
-                messageText +=
-                    '【お電話番号】\n' + formData.phone + '\n\n' +
-                    '【お届け先住所】\n' +
-                    '〒' + formData.postalCode + '\n' +
-                    formData.prefecture + formData.city + '\n' +
-                    formData.address + '\n' +
-                    (formData.building || '');
-            }
-
-            liff.sendMessages([{
-                type: 'text',
-                text: messageText
-            }]).then(() => {
-                alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。');
-                liff.closeWindow();
-            }).catch((err) => {
-                console.error('メッセージの送信に失敗しました', err);
-                alert('送信に失敗しました。もう一度お試しください。');
-            });
-        }
-    </script>
+      liff.sendMessages([{ type: 'text', text: messageText }])
+        .then(() => { alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。'); liff.closeWindow(); })
+        .catch((err) => { console.error('メッセージ送信失敗', err); alert('送信に失敗しました。もう一度お試しください。'); });
+    }
+  </script>
 </body>
 
 </html>
