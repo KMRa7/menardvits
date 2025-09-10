@@ -246,11 +246,10 @@
 </head>
 
 <body>
-  <!-- 右側の追従ナビ -->
-  <!-- スマホではサイドナビは非表示（CSSで制御） -->
-<nav class="side-nav" aria-label="ページ内ナビゲーション">
-  <a href="#section-message" title="送信へ移動"><span aria-hidden>⇩</span></a>
-</nav>
+  <!-- 右側の追従ナビ（スマホはCSSで非表示） -->
+  <nav class="side-nav" aria-label="ページ内ナビゲーション">
+    <a href="#section-message" title="送信へ移動"><span aria-hidden>⇩</span></a>
+  </nav>
 
   <main class="container" role="main">
     <h1>ご注文ページ</h1>
@@ -272,38 +271,38 @@
     <!-- 支払い方法 -->
     <div class="section-header"><span class="chip required">必須</span>お支払い方法を選んでください</div>
     <div class="grid-buttons" role="group" aria-label="お支払い方法">
-      <button type="button" class="btn-option one" onclick="selectPayment(this)">paypay</button>
-      <button type="button" class="btn-option one" onclick="selectPayment(this)">銀行振込</button>
-      <button type="button" class="btn-option one" onclick="selectPayment(this)">クレジットカード</button>
-      <button type="button" class="btn-option one" onclick="selectPayment(this)">店頭支払</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)" aria-pressed="false">paypay</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)" aria-pressed="false">銀行振込</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)" aria-pressed="false">クレジットカード</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)" aria-pressed="false">店頭支払</button>
     </div>
 
     <!-- お届け方法 -->
     <div class="section-header"><span class="chip required">必須</span>お届け方法を選択してください</div>
     <div class="grid-buttons" role="group" aria-label="お届け方法">
-      <button type="button" class="btn-option two" onclick="selectDelivery(this)">宅配（送料無料）</button>
-      <button type="button" class="btn-option two" onclick="selectDelivery(this)">店頭受け取り</button>
+      <button type="button" class="btn-option two" onclick="selectDelivery(this)" aria-pressed="false">宅配（送料無料）</button>
+      <button type="button" class="btn-option two" onclick="selectDelivery(this)" aria-pressed="false">店頭受け取り</button>
     </div>
 
     <!-- 初回注文確認 -->
     <div class="section-header"><span class="chip required">必須</span>ご注文は初めてですか？</div>
     <div class="grid-buttons" role="group" aria-label="初回注文かどうか">
-      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, true)">はい</button>
-      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, false)">いいえ</button>
+      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, true)" aria-pressed="false">はい</button>
+      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, false)" aria-pressed="false">いいえ</button>
     </div>
 
     <!-- 初回注文者向け -->
     <section id="firstTimeSection" class="hidden" aria-live="polite">
       <label class="label"><span class="chip required">必須</span>初回のお客様 - お電話番号</label>
       <p class="info-text">日中にご連絡がつく番号をご記入ください。</p>
-      <input type="tel" id="phone"$1 inputmode="tel" autocomplete="tel" placeholder="09012345678（ハイフンなし）">
+      <input type="tel" id="phone" inputmode="tel" autocomplete="tel" placeholder="09012345678（ハイフンなし）">
 
       <label class="label"><span class="chip required">必須</span>初回のお客様 - お届け先住所</label>
       <p class="info-text">個人情報は適切に管理いたします。<br>ご安心のうえご記入ください。</p>
 
       <label class="label" for="postalCode">郵便番号</label>
       <div class="postal-input-container">
-        <input type="text" id="postalCode"$1 inputmode="numeric" pattern="\d{7}" placeholder="例: 1000001（7桁・ハイフン不要）">
+        <input type="text" id="postalCode" inputmode="numeric" pattern="\d{7}" placeholder="例: 1000001（7桁・ハイフン不要）">
         <button type="button" class="btn-subtle" onclick="searchAddress()" id="searchBtn">住所検索</button>
       </div>
       <div class="error-message" id="postalError" style="display:none;"></div>
@@ -322,15 +321,12 @@
     </section>
 
     <div style="margin-top: 20px;"></div>
-    </main>
-
-<!-- 画面下部に固定の送信バー（スマホ最適化） -->
-<div class="footer-cta">
-  <button class="btn-accent" onclick="submitForm()" id="section-message">送信</button>
-</div>
-
-<!-- 既存の </main> は上に移動済み -->
   </main>
+
+  <!-- 画面下部に固定の送信バー（スマホ最適化） -->
+  <div class="footer-cta">
+    <button class="btn-accent" onclick="submitForm()" id="section-message">送信</button>
+  </div>
 
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -340,7 +336,7 @@
     let isFirstTime = null;
 
     const NAME_KEY = 'orderForm:name';
-  
+
     function loadNameFromStorage() {
       try {
         const raw = localStorage.getItem(NAME_KEY);
@@ -352,7 +348,7 @@
         console.warn('名前の読込に失敗しました', e);
       }
     }
-  
+
     function saveNameToStorage() {
       try {
         const lastName = (document.getElementById('lastName').value || '').trim();
@@ -368,33 +364,55 @@
         console.warn('名前の保存に失敗しました', e);
       }
     }
-  
+
     function clearSavedName() {
       localStorage.removeItem(NAME_KEY);
     }
-    
+
     // LIFF初期化
     document.addEventListener('DOMContentLoaded', function () {
+      if (typeof liff === 'undefined') {
+        console.error('LIFF SDK が読み込まれていません。');
+        return;
+      }
       liff.init({ liffId: '2008001634-M7wLd2zR' })
-        .then(() => console.log('LIFF初期化成功'))
+        .then(() => {
+          console.log('LIFF初期化成功');
+          if (!liff.isLoggedIn()) {
+            // ブラウザ直開き時などはログインを促す
+            try { liff.login(); } catch (e) { console.warn('liff.login() 失敗', e); }
+          }
+        })
         .catch((err) => console.error('LIFF初期化失敗', err));
     });
 
     function selectPayment(el) {
-      document.querySelectorAll('.one').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.one').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
       el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
       paymentMethod = el.innerText.trim();
     }
 
     function selectDelivery(el) {
-      document.querySelectorAll('.two').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.two').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
       el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
       deliveryMethod = el.innerText.trim();
     }
 
     function selectFirstTime(el, firstTime) {
-      document.querySelectorAll('.first-time').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.first-time').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
       el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
       isFirstTime = firstTime;
 
       const sec = document.getElementById('firstTimeSection');
@@ -404,8 +422,11 @@
         sec.classList.add('hidden');
         // フィールドクリア
         ['phone','postalCode','prefecture','city','address','building'].forEach(id => {
-          const el = document.getElementById(id); if (el) el.value = '';
+          const el2 = document.getElementById(id); if (el2) el2.value = '';
         });
+        // エラー表示も隠す
+        const err = document.getElementById('postalError');
+        if (err) { err.style.display = 'none'; err.textContent = ''; }
       }
     }
 
@@ -447,15 +468,16 @@
       }
     }
 
-    // Enter で住所検索
+    // Enter で住所検索 + 名前のローカル保存
     document.addEventListener('DOMContentLoaded', () => {
       const pc = document.getElementById('postalCode');
-      pc.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchAddress(); });
-      pc.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^\d]/g, ''); });
+      if (pc) {
+        pc.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchAddress(); });
+        pc.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^\d]/g, ''); });
+      }
 
       loadNameFromStorage();
 
-      // ▼ 入力が変わったら自動保存（changeでもinputでもOK）
       const ln = document.getElementById('lastName');
       const fn = document.getElementById('firstName');
       ln.addEventListener('change', saveNameToStorage);
@@ -490,7 +512,8 @@
       if (formData.isFirstTime) {
         if (!formData.phone) { alert('初回のお客様は電話番号の入力が必要です。'); return; }
         if (!formData.postalCode || !formData.prefecture || !formData.city || !formData.address) {
-          alert('初回のお客様は住所情報の入力が必要です。'); return; }
+          alert('初回のお客様は住所情報の入力が必要です。'); return;
+        }
       }
 
       let messageText = '≪ご注文内容≫\n' +
@@ -507,11 +530,16 @@
           formData.address + '\n' + (formData.building || '');
       }
 
+      // LIFF送信ガード
+      if (typeof liff === 'undefined' || !liff.isApiAvailable || !liff.isApiAvailable('sendMessages')) {
+        alert('LIFFメッセージ送信が利用できない環境です。LINE内から再度お試しください。');
+        return;
+      }
+
       liff.sendMessages([{ type: 'text', text: messageText }])
         .then(() => { alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。'); liff.closeWindow(); })
         .catch((err) => { console.error('メッセージ送信失敗', err); alert('送信に失敗しました。もう一度お試しください。'); });
     }
   </script>
 </body>
-
 </html>
