@@ -257,7 +257,7 @@
 
     <!-- お名前 -->
     <div class="section-header"><span class="chip required">必須</span>お名前をお願いします</div>
-    <p class="info-text">LINEとは連動していないため、<br>お手数ですがお名前の記載をお願いいたします。</p>
+    <p class="info-text">お手数ですがお名前の記載をお願いいたします。</p>
     <label class="label" for="lastName">姓</label>
     <input type="text" id="lastName" placeholder="姓" autocomplete="family-name" />
     <label class="label" for="firstName">名</label>
@@ -339,6 +339,40 @@
     let deliveryMethod = '';
     let isFirstTime = null;
 
+    const NAME_KEY = 'orderForm:name';
+  
+    function loadNameFromStorage() {
+      try {
+        const raw = localStorage.getItem(NAME_KEY);
+        if (!raw) return;
+        const { lastName, firstName } = JSON.parse(raw);
+        if (lastName) document.getElementById('lastName').value = lastName;
+        if (firstName) document.getElementById('firstName').value = firstName;
+      } catch (e) {
+        console.warn('名前の読込に失敗しました', e);
+      }
+    }
+  
+    function saveNameToStorage() {
+      try {
+        const lastName = (document.getElementById('lastName').value || '').trim();
+        const firstName = (document.getElementById('firstName').value || '').trim();
+        if (!lastName && !firstName) {
+          localStorage.removeItem(NAME_KEY);
+          return;
+        }
+        localStorage.setItem(NAME_KEY, JSON.stringify({
+          lastName, firstName, savedAt: Date.now()
+        }));
+      } catch (e) {
+        console.warn('名前の保存に失敗しました', e);
+      }
+    }
+  
+    function clearSavedName() {
+      localStorage.removeItem(NAME_KEY);
+    }
+    
     // LIFF初期化
     document.addEventListener('DOMContentLoaded', function () {
       liff.init({ liffId: '2008001634-M7wLd2zR' })
@@ -418,9 +452,20 @@
       const pc = document.getElementById('postalCode');
       pc.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchAddress(); });
       pc.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^\d]/g, ''); });
+
+      loadNameFromStorage();
+
+      // ▼ 入力が変わったら自動保存（changeでもinputでもOK）
+      const ln = document.getElementById('lastName');
+      const fn = document.getElementById('firstName');
+      ln.addEventListener('change', saveNameToStorage);
+      fn.addEventListener('change', saveNameToStorage);
+      ln.addEventListener('input', saveNameToStorage);
+      fn.addEventListener('input', saveNameToStorage);
     });
 
     function submitForm() {
+      saveNameToStorage();
       const formData = {
         lastName: document.getElementById('lastName').value.trim(),
         firstName: document.getElementById('firstName').value.trim(),
