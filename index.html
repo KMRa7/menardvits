@@ -358,26 +358,28 @@
     async function initLiff() {
       if (typeof liff === 'undefined') {
         console.error('LIFF SDK が読み込まれていません。');
-        return;
-      }
-      try {
-        await liff.init({ liffId: '2008127424-G7Lwv7qD' });
-        console.log('LIFF初期化成功');
-
-        if (!liff.isLoggedIn()) {
-          liff.login(); // 戻ってきたら再実行
-          return;
+      } else {
+        try {
+          await liff.init({ liffId: '2008127424-G7Lwv7qD' });
+          console.log('LIFF初期化成功');
+    
+          if (!liff.isLoggedIn()) {
+            liff.login();
+            return; // リダイレクト
+          }
+    
+          if (!liff.isInClient()) {
+            console.log('外部ブラウザ表示。sendMessages不可→shareTargetPicker等へフォールバック');
+          }
+    
+          window.__liffReady = true; // ← グローバル目印
+        } catch (err) {
+          console.error('LIFF初期化失敗', err);
+        } finally {
+          // ここで必ずボタンを有効化（初期化失敗でも押せるようにする）
+          const btn = document.getElementById('section-message');
+          if (btn) btn.disabled = false;
         }
-
-        if (!liff.isInClient()) {
-          console.log('外部ブラウザで表示中：sendMessages不可。shareTargetPickerにフォールバック予定。');
-        }
-
-        liffReady = true;
-        const btn = document.getElementById('section-message');
-        if (btn) btn.disabled = false;
-      } catch (err) {
-        console.error('LIFF初期化失敗', err);
       }
     }
 
