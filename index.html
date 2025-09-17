@@ -231,7 +231,7 @@
 
   <!-- 画面下部に固定の送信バー -->
   <div class="footer-cta">
-    <button class="btn-accent" onclick="submitForm()" id="section-message">送信</button>
+    <button class="btn-accent" onclick="submitForm()" id="section-message" disabled>送信</button>
   </div>
 
   <!-- LIFF SDK -->
@@ -300,22 +300,6 @@
       } catch (e) { console.warn('住所の保存に失敗しました', e); }
     }
 
-    // ===== LIFF初期化 =====
-    document.addEventListener('DOMContentLoaded', function () {
-      if (typeof liff === 'undefined') {
-        console.error('LIFF SDK が読み込まれていません。');
-        return;
-      }
-      liff.init({ liffId: '2008127424-G7Lwv7qD' })
-        .then(() => {
-          console.log('LIFF初期化成功');
-          if (!liff.isLoggedIn()) {
-            try { liff.login(); } catch (e) { console.warn('liff.login() 失敗', e); }
-          }
-        })
-        .catch((err) => console.error('LIFF初期化失敗', err));
-    });
-
     // ===== UI選択 =====
     function selectPayment(el) {
       document.querySelectorAll('.one').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
@@ -368,8 +352,39 @@
       }
     }
 
+    // ===== LIFF初期化＋準備完了フラグ =====
+    let liffReady = false;
+
+    async function initLiff() {
+      if (typeof liff === 'undefined') {
+        console.error('LIFF SDK が読み込まれていません。');
+        return;
+      }
+      try {
+        await liff.init({ liffId: '2008127424-G7Lwv7qD' });
+        console.log('LIFF初期化成功');
+
+        if (!liff.isLoggedIn()) {
+          liff.login(); // 戻ってきたら再実行
+          return;
+        }
+
+        if (!liff.isInClient()) {
+          console.log('外部ブラウザで表示中：sendMessages不可。shareTargetPickerにフォールバック予定。');
+        }
+
+        liffReady = true;
+        const btn = document.getElementById('section-message');
+        if (btn) btn.disabled = false;
+      } catch (err) {
+        console.error('LIFF初期化失敗', err);
+      }
+    }
+
     // ===== 初期化：入力イベント紐付け & ロード =====
     document.addEventListener('DOMContentLoaded', () => {
+      initLiff();
+
       // 郵便番号：Enter検索 & 数値のみ
       const pc = document.getElementById('postalCode');
       if (pc) {
@@ -397,7 +412,13 @@
     });
 
     // ===== 送信 =====
-    function submitForm() {
+    async function submitForm() {
+      // LIFF準備待ち
+      if (!liffReady) {
+        alert('初期化中です。数秒後にもう一度お試しください。');
+        return;
+      }
+
       saveNameToStorage();
       saveAddressToStorage();
 
@@ -429,31 +450,41 @@
         }
       }
 
-      let messageText =
+      const messageText =
         '≪ご注文内容≫\n' +
         '【お名前】\n' + formData.lastName + ' ' + formData.firstName + '\n\n' +
         '【ご注文内容】\n' + (formData.orderDetails || '記載なし') + '\n\n' +
         '【お支払い方法】\n' + formData.paymentMethod + '\n\n' +
-        '【お届け方法】\n' + formData.deliveryMethod + '\n\n';
+        '【お届け方法】\n' + formData.deliveryMethod + '\n\n' +
+        (formData.phone || formData.postalCode || formData.prefecture || formData.city || formData.address || formData.building
+          ? ('【お電話番号】\n' + (formData.phone || '記載なし') + '\n\n' +
+             '【お届け先住所】\n' +
+             (formData.postalCode ? ('〒' + formData.postalCode + '\n') : '') +
+             (formData.prefecture || '') + (formData.city || '') + '\n' +
+             (formData.address || '') + '\n' + (formData.building || '')
+            )
+          : ''
+        );
 
-      // 住所関連は入力があれば同梱（宅配時は必須通過済み）
-      if (formData.phone || formData.postalCode || formData.prefecture || formData.city || formData.address || formData.building) {
-        messageText +=
-          '【お電話番号】\n' + (formData.phone || '記載なし') + '\n\n' +
-          '【お届け先住所】\n' +
-          (formData.postalCode ? ('〒' + formData.postalCode + '\n') : '') +
-          (formData.prefecture || '') + (formData.city || '') + '\n' +
-          (formData.address || '') + '\n' + (formData.building || '');
+      try {
+        if (liff.isInClient()) {
+          // LINEアプリ内 → sendMessages
+          await liff.sendMessages([{ type: 'text', text: messageText }]);
+          alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。');
+          liff.closeWindow();
+        } else if (liff.isApiAvailable && liff.isApiAvailable('shareTargetPicker')) {
+          // 外部ブラウザ → shareTargetPicker フォールバック
+          await liff.shareTargetPicker([{ type: 'text', text: messageText }]);
+          alert('ご注文内容をLINEで共有しました。店舗側でも確認します。');
+        } else {
+          // 最終フォールバック：クリップボードにコピー
+          await navigator.clipboard.writeText(messageText);
+          alert('現在の環境では送信できませんでした。内容をコピーしましたので、LINEトークに貼り付けて送信してください。');
+        }
+      } catch (err) {
+        console.error('メッセージ送信失敗', err);
+        alert('送信に失敗しました。LINEアプリ内から開き直すか、再度お試しください。');
       }
-
-      if (typeof liff === 'undefined' || !liff.isApiAvailable || !liff.isApiAvailable('sendMessages')) {
-        alert('LIFFメッセージ送信が利用できない環境です。LINE内から再度お試しください。');
-        return;
-      }
-
-      liff.sendMessages([{ type: 'text', text: messageText }])
-        .then(() => { alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。'); liff.closeWindow(); })
-        .catch((err) => { console.error('メッセージ送信失敗', err); alert('送信に失敗しました。もう一度お試しください。'); });
     }
   </script>
 </body>
