@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ✅ 強化版 CSP：connect-src に LIFF 必須のドメインを追加 -->
+  <!-- ✅ 強化CSP（LIFF必須ドメインを許可） -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline' https://static.line-scdn.net https://kit.fontawesome.com https://cdnjs.cloudflare.com;
@@ -21,6 +22,7 @@
     img-src 'self' data: https:;
     frame-ancestors 'none';
   ">
+
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta http-equiv="X-Frame-Options" content="DENY" />
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
@@ -28,11 +30,291 @@
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
   <style>
-    /* ←（あなたのCSSそのまま）省略なしでOK */
-    /* ここは元コードのCSSをそのまま貼ってください（改変なし） */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --bg: #f6f6f6;
+      --panel: #ffffff;
+      --ink-900: #111827;
+      --ink-700: #374151;
+      --ink-500: #6b7280;
+      --line: #e5e7eb;
+      --accent-50: #fffbfc;
+      --accent-100: #ffefef;
+      --accent-200: #ffdddd;
+      --accent-300: #f6c8c8;
+      --accent-500: #df9b9b;
+      --accent-600: #c57f7f;
+      --security-green: #10b981;
+      --security-yellow: #f59e0b;
+      --security-red: #ef4444;
+      --shadow: 0 2px 10px rgba(17, 24, 39, 0.06);
+      --shadow-lg: 0 8px 28px rgba(17, 24, 39, 0.08);
+      --r-md: 12px;
+      --r-lg: 16px;
+      --ease: cubic-bezier(.2,.7,.2,1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+      color: var(--ink-900);
+      background: linear-gradient(180deg, var(--bg) 0%, #ffffff 100%);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 32px 16px;
+      display: grid;
+      place-items: start center;
+    }
+
+    .container {
+      width: min(720px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-lg);
+      border-radius: var(--r-lg);
+      padding: clamp(20px, 3vw, 32px);
+      position: relative;
+    }
+
+    .container::before {
+      content: "";
+      position: absolute; inset: 0 0 auto 0; height: 6px;
+      background: linear-gradient(90deg, var(--accent-200), var(--accent-300));
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+    }
+
+    .security-indicator {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      z-index: 100;
+    }
+
+    .security-indicator.secure {
+      color: var(--security-green);
+      border-color: var(--security-green);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .security-indicator.warning {
+      color: var(--security-yellow);
+      border-color: var(--security-yellow);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    h1 {
+      margin: 8px 0 20px;
+      font-size: clamp(22px, 3.2vw, 28px);
+      font-weight: 700;
+      letter-spacing: .01em;
+      color: var(--ink-700);
+    }
+
+    .section-header {
+      display: block;
+      margin: 28px 0 12px;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--ink-700);
+      background: linear-gradient(180deg, var(--accent-100), #fff);
+      border: 1px solid var(--accent-200);
+      border-radius: var(--r-md);
+    }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--ink-700);
+      background: #fff;
+      margin-right: 8px;
+    }
+    .chip.required { border-color: #ef4444; color: #ef4444; background: #fff5f5; }
+    .chip.optional { color: var(--ink-500); }
+
+    .info-text {
+      margin: 8px 0 16px;
+      padding: 12px 14px;
+      background: var(--accent-50);
+      border: 1px dashed var(--accent-200);
+      border-radius: var(--r-md);
+      color: var(--ink-700);
+      font-size: 14px;
+    }
+
+    .security-notice {
+      margin: 8px 0 16px;
+      padding: 12px 14px;
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid var(--security-green);
+      border-radius: var(--r-md);
+      color: var(--ink-700);
+      font-size: 13px;
+    }
+
+    label.label {
+      display: block;
+      margin: 18px 0 8px;
+      font-weight: 600;
+      color: var(--ink-700);
+      font-size: 14px;
+    }
+
+    input[type="text"], input[type="tel"], textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      font-size: 16px;
+      background: #fff;
+      color: var(--ink-900);
+      transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-500);
+      box-shadow: 0 0 0 4px rgba(223, 155, 155, .18);
+    }
+
+    .grid-buttons {
+      display: grid; gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      margin: 10px 0 14px;
+    }
+
+    .btn-option {
+      appearance: none; cursor: pointer;
+      padding: 12px 14px; min-height: 44px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      font-size: 14px; font-weight: 600; color: var(--ink-700);
+      display: inline-flex; align-items: center; justify-content: center; text-align: center;
+      transition: transform .05s var(--ease), border-color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .btn-option:hover { border-color: var(--accent-300); background: var(--accent-50); }
+    .btn-option:active { transform: translateY(1px); }
+    .btn-option.active { border-color: var(--accent-500); background: var(--accent-100); box-shadow: inset 0 0 0 1px var(--accent-500); }
+
+    .postal-input-container { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+
+    .btn-accent {
+      appearance: none; cursor: pointer;
+      padding: 12px 16px; min-height: 44px; width: 100%;
+      border: 1px solid var(--accent-500);
+      background: linear-gradient(180deg, var(--accent-500), var(--accent-600));
+      color: #fff; font-weight: 700; font-size: 16px;
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow);
+      transition: transform .06s var(--ease), filter .2s var(--ease);
+    }
+    .btn-accent:hover { filter: brightness(1.02); }
+    .btn-accent:active { transform: translateY(1px); }
+    .btn-accent:disabled { opacity: .55; cursor: not-allowed; }
+
+    .btn-subtle {
+      appearance: none; cursor: pointer;
+      padding: 12px 14px; min-height: 44px;
+      border: 1px solid var(--line);
+      background: #fff; color: var(--ink-700);
+      border-radius: var(--r-md);
+      font-weight: 600; font-size: 14px;
+      transition: border-color .2s var(--ease), background .2s var(--ease);
+    }
+    .btn-subtle:hover { background: var(--accent-50); border-color: var(--accent-300); }
+
+    .side-nav {
+      position: fixed; right: 12px; top: 50%; transform: translateY(-50%);
+      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 8px;
+      box-shadow: var(--shadow);
+    }
+    .side-nav a { display: grid; place-items: center; width: 44px; height: 44px; text-decoration: none; color: var(--ink-700); border-radius: 10px; font-size: 18px; }
+    .side-nav a:hover { background: var(--accent-100); }
+
+    .error-message { color: #b91c1c; font-size: 13px; margin-top: 6px; }
+
+    .clear-data-btn {
+      appearance: none; cursor: pointer;
+      padding: 8px 12px; margin: 16px 0;
+      border: 1px solid #dc2626;
+      background: #fff; color: #dc2626;
+      border-radius: var(--r-md);
+      font-weight: 600; font-size: 13px;
+      transition: background .2s var(--ease);
+    }
+    .clear-data-btn:hover { background: #fef2f2; }
+
+    .field-valid { border-color: var(--security-green) !important; }
+    .field-invalid { border-color: var(--security-red) !important; }
+
+    .rate-limit-notice {
+      margin: 8px 0 16px;
+      padding: 8px 12px;
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px solid var(--security-yellow);
+      border-radius: var(--r-md);
+      color: var(--ink-700);
+      font-size: 12px;
+      display: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+    @media (max-width: 768px) {
+      body { padding: 20px 12px; }
+      .container { padding: 20px; }
+      .side-nav { right: 8px; }
+      .side-nav a { width: 40px; height: 40px; }
+      .security-indicator { top: 12px; right: 12px; }
+    }
+
+    @media (max-width: 640px) {
+      html, body { font-size: 16px; }
+      body { padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) calc(84px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+      .container { border-radius: 14px; padding: 16px; }
+      .grid-buttons { grid-template-columns: 1fr; }
+      .side-nav { display: none; }
+    }
+
+    .footer-cta {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 10px max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+      background: rgba(255,255,255,.85);
+      backdrop-filter: saturate(140%) blur(10px);
+      border-top: 1px solid var(--line);
+      box-shadow: 0 -6px 24px rgba(17,24,39,.06);
+      z-index: 50;
+    }
+    .footer-cta .btn-accent { width: 100%; }
+
+    * { -webkit-tap-highlight-color: transparent; }
+    .btn-option, .btn-subtle, .btn-accent { touch-action: manipulation; }
+
+    .container::after {
+        content: "";
+        display: block;
+        height: 140px;
+    }
   </style>
 
-  <!-- ✅ http で来たら https へ（Netlify でも一応保険） -->
+  <!-- ✅ http→https リダイレクト（保険） -->
   <script>
     if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
       location.replace('https://' + location.host + location.pathname + location.search + location.hash);
@@ -41,6 +323,7 @@
 </head>
 
 <body>
+  <!-- セキュリティインジケーター -->
   <div id="securityIndicator" class="security-indicator">🔒 読み込み中...</div>
 
   <nav class="side-nav" aria-label="ページ内ナビゲーション">
@@ -50,23 +333,85 @@
   <main class="container" role="main">
     <h1>ご注文ページ</h1>
 
-    <!-- ←（あなたのHTMLフォーム本体はそのまま） -->
-    <!-- 以降、フォームのマークアップは元のまま貼ってください（省略） -->
+    <!-- お名前 -->
+    <div class="section-header"><span class="chip required">必須</span>お名前をお願いします</div>
+    <p class="info-text">お手数ですがお名前の記載をお願いいたします。</p>
+    <label class="label" for="lastName">姓</label>
+    <input type="text" id="lastName" placeholder="姓" autocomplete="family-name" maxlength="50" />
+    <div class="error-message" id="lastNameError" style="display:none;"></div>
+    
+    <label class="label" for="firstName">名</label>
+    <input type="text" id="firstName" placeholder="名" autocomplete="given-name" maxlength="50" />
+    <div class="error-message" id="firstNameError" style="display:none;"></div>
 
-    <!-- 保存データクリアボタン／…も元のままでOK -->
+    <!-- ご注文内容 -->
+    <div class="section-header"><span class="chip optional">任意</span>ご注文の商品をご記入ください</div>
+    <p class="info-text">・商品名、色番号<br />・数量<br />・その他ご不明な点があれば何でもどうぞ</p>
+    <label class="label" for="orderDetails">ご注文内容</label>
+    <textarea id="orderDetails" rows="4" placeholder="ご注文内容をご記入ください" maxlength="1000"></textarea>
+
+    <!-- 支払い方法 -->
+    <div class="section-header"><span class="chip required">必須</span>お支払い方法を選んでください</div>
+    <div class="grid-buttons" role="group" aria-label="お支払い方法">
+      <button type="button" class="btn-option one" onclick="selectPayment(this)" aria-pressed="false">paypay</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)" aria-pressed="false">銀行振込</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)" aria-pressed="false">クレジットカード</button>
+      <button type="button" class="btn-option one" onclick="selectPayment(this)" aria-pressed="false">店頭支払</button>
+    </div>
+
+    <!-- お届け方法 -->
+    <div class="section-header"><span class="chip required">必須</span>お届け方法を選択してください</div>
+    <div class="grid-buttons" role="group" aria-label="お届け方法">
+      <button type="button" class="btn-option two" onclick="selectDelivery(this)" aria-pressed="false">宅配（送料無料）</button>
+      <button type="button" class="btn-option two" onclick="selectDelivery(this)" aria-pressed="false">店頭受け取り</button>
+    </div>
+
+    <!-- 連絡先・住所情報 -->
+    <label class="label"><span class="chip required">必須</span>お電話番号</label>
+    <p class="info-text">日中にご連絡がつく番号をご記入ください。</p>
+    <input type="tel" id="phone" inputmode="tel" autocomplete="tel" placeholder="09012345678（ハイフンなし）" maxlength="15">
+    <div class="error-message" id="phoneError" style="display:none;"></div>
+
+    <label class="label"><span class="chip required">必須</span>お届け先住所</label>
+
+    <label class="label" for="postalCode">郵便番号</label>
+    <div class="postal-input-container">
+      <input type="text" id="postalCode" inputmode="numeric" pattern="\d{7}" placeholder="例: 1000001（7桁・ハイフン不要）" maxlength="7">
+      <button type="button" class="btn-subtle" onclick="searchAddress()" id="searchBtn">住所検索</button>
+    </div>
+    <div class="error-message" id="postalError" style="display:none;"></div>
+    <div class="rate-limit-notice" id="rateLimitNotice">
+      住所検索の利用回数が上限に近づいています。しばらく時間をおいてからお試しください。
+    </div>
+
+    <label class="label" for="prefecture">都道府県</label>
+    <input type="text" id="prefecture" placeholder="都道府県" readonly maxlength="10" />
+
+    <label class="label" for="city">市区町村</label>
+    <input type="text" id="city" placeholder="市区町村" readonly maxlength="50" />
+
+    <label class="label" for="address">番地</label>
+    <input type="text" id="address" placeholder="番地を入力してください" maxlength="100" />
+    <div class="error-message" id="addressError" style="display:none;"></div>
+
+    <label class="label" for="building">マンション・ビル名（任意）</label>
+    <input type="text" id="building" placeholder="マンション・ビル名（任意）" maxlength="100" />
+
+    <!-- 保存データクリアボタン -->
     <button type="button" class="clear-data-btn" onclick="clearAllSavedData()">保存済み入力データをクリア</button>
+
     <div style="margin-top: 20px;"></div>
   </main>
 
+  <!-- 画面下部に固定の送信バー -->
   <div class="footer-cta">
     <button class="btn-accent" onclick="submitForm()" id="section-message">送信</button>
   </div>
 
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-
   <script>
-    // ====== ここからJS（あなたのロジックはできる限りそのまま） ======
+    // ===== 変数・定数 =====
     let paymentMethod = '';
     let deliveryMethod = '';
     let addressSearchCount = 0;
@@ -74,8 +419,7 @@
     let lastAddressSearchTime = 0;
     const SEARCH_COOLDOWN = 2000;
     let liffReady = false;
-
-    const LIFF_ID = '2007458512-xZR3av9K'; // ← あなたの liffId
+    const LIFF_ID = '2007458512-xZR3av9K';
 
     const STORAGE_KEYS = {
       name: 'orderForm:name',
@@ -84,9 +428,13 @@
       searchCount: 'orderForm:searchCount'
     };
 
+    // ===== 共通ユーティリティ =====
     function sanitizeInput(input) {
       if (typeof input !== 'string') return '';
-      return input.replace(/[<>\"'&]/g, '').replace(/[\x00-\x1f\x7f-\x9f]/g, '').trim();
+      return input
+        .replace(/[<>\"'&]/g, '')
+        .replace(/[\x00-\x1f\x7f-\x9f]/g, '')
+        .trim();
     }
 
     function validateName(name) {
@@ -111,56 +459,88 @@
       return { isValid: true, value: s };
     }
 
-    function saveToStorage(key, data) { try { sessionStorage.setItem(key, JSON.stringify(data)); } catch(e){} }
-    function loadFromStorage(key) { try { const d = sessionStorage.getItem(key); return d ? JSON.parse(d) : null; } catch(e){ return null; } }
+    function saveToStorage(key, data) { try { sessionStorage.setItem(key, JSON.stringify(data)); } catch (e) {} }
+    function loadFromStorage(key) { try { const d = sessionStorage.getItem(key); return d ? JSON.parse(d) : null; } catch (e) { return null; } }
 
     function showFieldValidation(fieldId, v) {
       const field = document.getElementById(fieldId);
       const errorDiv = document.getElementById(fieldId + 'Error');
       if (!field || !errorDiv) return;
       if (v.isValid) {
-        field.classList.remove('field-invalid'); field.classList.add('field-valid'); errorDiv.style.display = 'none';
+        field.classList.remove('field-invalid');
+        field.classList.add('field-valid');
+        errorDiv.style.display = 'none';
       } else {
-        field.classList.remove('field-valid'); field.classList.add('field-invalid');
-        errorDiv.textContent = v.message; errorDiv.style.display = 'block';
+        field.classList.remove('field-valid');
+        field.classList.add('field-invalid');
+        errorDiv.textContent = v.message;
+        errorDiv.style.display = 'block';
       }
     }
 
     function saveNameToStorage() {
-      const lv = validateName(document.getElementById('lastName').value);
-      const fv = validateName(document.getElementById('firstName').value);
-      showFieldValidation('lastName', lv);
-      showFieldValidation('firstName', fv);
-      if (lv.isValid && fv.isValid) saveToStorage(STORAGE_KEYS.name, { lastName: lv.value, firstName: fv.value });
+      try {
+        const lv = validateName(document.getElementById('lastName').value);
+        const fv = validateName(document.getElementById('firstName').value);
+        showFieldValidation('lastName', lv);
+        showFieldValidation('firstName', fv);
+        if (lv.isValid && fv.isValid) saveToStorage(STORAGE_KEYS.name, { lastName: lv.value, firstName: fv.value });
+      } catch (e) {}
     }
+
     function savePhoneToStorage() {
-      const pv = validatePhone(document.getElementById('phone').value);
-      showFieldValidation('phone', pv);
-      if (pv.isValid) saveToStorage(STORAGE_KEYS.phone, pv.value);
+      try {
+        const pv = validatePhone(document.getElementById('phone').value);
+        showFieldValidation('phone', pv);
+        if (pv.isValid) saveToStorage(STORAGE_KEYS.phone, pv.value);
+      } catch (e) {}
     }
+
     function saveAddressToStorage() {
-      const data = {
-        postalCode: sanitizeInput(document.getElementById('postalCode').value),
-        prefecture: sanitizeInput(document.getElementById('prefecture').value),
-        city: sanitizeInput(document.getElementById('city').value),
-        address: sanitizeInput(document.getElementById('address').value),
-        building: sanitizeInput(document.getElementById('building').value)
-      };
-      saveToStorage(STORAGE_KEYS.address, data);
+      try {
+        const data = {
+          postalCode: sanitizeInput(document.getElementById('postalCode').value),
+          prefecture: sanitizeInput(document.getElementById('prefecture').value),
+          city: sanitizeInput(document.getElementById('city').value),
+          address: sanitizeInput(document.getElementById('address').value),
+          building: sanitizeInput(document.getElementById('building').value)
+        };
+        saveToStorage(STORAGE_KEYS.address, data);
+      } catch (e) {}
     }
 
-    function loadNameFromStorage(){ const d=loadFromStorage(STORAGE_KEYS.name); if(d){ lastName.value=d.lastName||''; firstName.value=d.firstName||''; } }
-    function loadPhoneFromStorage(){ const d=loadFromStorage(STORAGE_KEYS.phone); if(d){ phone.value=d; } }
-    function loadAddressFromStorage(){ const d=loadFromStorage(STORAGE_KEYS.address); if(d){ postalCode.value=d.postalCode||''; prefecture.value=d.prefecture||''; city.value=d.city||''; address.value=d.address||''; building.value=d.building||''; } }
-
-    function clearAllSavedData(){
-      if(confirm('保存された入力データをすべて削除しますか？\n（現在の入力内容は残ります）')){
-        Object.values(STORAGE_KEYS).forEach(k=>sessionStorage.removeItem(k));
-        alert('保存データをクリアしました。');
+    function loadNameFromStorage() {
+      const d = loadFromStorage(STORAGE_KEYS.name);
+      if (d) {
+        document.getElementById('lastName').value = d.lastName || '';
+        document.getElementById('firstName').value = d.firstName || '';
+      }
+    }
+    function loadPhoneFromStorage() {
+      const d = loadFromStorage(STORAGE_KEYS.phone);
+      if (d) document.getElementById('phone').value = d;
+    }
+    function loadAddressFromStorage() {
+      const d = loadFromStorage(STORAGE_KEYS.address);
+      if (d) {
+        document.getElementById('postalCode').value = d.postalCode || '';
+        document.getElementById('prefecture').value = d.prefecture || '';
+        document.getElementById('city').value = d.city || '';
+        document.getElementById('address').value = d.address || '';
+        document.getElementById('building').value = d.building || '';
       }
     }
 
-    function checkRateLimit(){
+    function clearAllSavedData() {
+      if (confirm('保存された入力データをすべて削除しますか？\n（現在の入力内容は残ります）')) {
+        try {
+          Object.values(STORAGE_KEYS).forEach(key => { sessionStorage.removeItem(key); });
+          alert('保存データをクリアしました。');
+        } catch (e) {}
+      }
+    }
+
+    function checkRateLimit() {
       const now = Date.now();
       if (now - lastAddressSearchTime < SEARCH_COOLDOWN) return false;
       addressSearchCount = parseInt(loadFromStorage(STORAGE_KEYS.searchCount) || '0');
@@ -171,120 +551,146 @@
       return true;
     }
 
-    async function searchAddress(){
-      const postal = sanitizeInput(document.getElementById('postalCode').value).replace(/[^\d]/g,'');
+    async function searchAddress() {
+      const postal = sanitizeInput(document.getElementById('postalCode').value).replace(/[^\d]/g, '');
       const errorDiv = document.getElementById('postalError');
       const btn = document.getElementById('searchBtn');
+
       errorDiv.style.display = 'none';
       document.getElementById('rateLimitNotice').style.display = 'none';
 
-      if (postal.length !== 7) { errorDiv.textContent='7桁の郵便番号を入力してください（例: 1000001）'; errorDiv.style.display='block'; return; }
-      if (!checkRateLimit()) { errorDiv.textContent='しばらく時間をおいてから再度お試しください。'; errorDiv.style.display='block'; return; }
+      if (postal.length !== 7) {
+        errorDiv.textContent = '7桁の郵便番号を入力してください（例: 1000001）';
+        errorDiv.style.display = 'block';
+        return;
+      }
 
-      btn.disabled = true; const original = btn.textContent; btn.textContent='検索中…';
-      try{
-        const controller=new AbortController(); const t=setTimeout(()=>controller.abort(),10000);
-        const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postal}`,{signal:controller.signal});
-        clearTimeout(t);
-        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!checkRateLimit()) {
+        errorDiv.textContent = 'しばらく時間をおいてから再度お試しください。';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = '検索中…';
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postal}`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        if(data.status===200 && data.results && data.results.length>0){
-          const r=data.results[0];
-          const prefecture=sanitizeInput(r.address1||'');
-          const city=sanitizeInput((r.address2||'')+(r.address3||''));
-          if(prefecture && city){
-            document.getElementById('prefecture').value=prefecture;
-            document.getElementById('city').value=city;
+        if (data.status === 200 && data.results && data.results.length > 0) {
+          const r = data.results[0];
+          const prefecture = sanitizeInput(r.address1 || '');
+          const city = sanitizeInput((r.address2 || '') + (r.address3 || ''));
+          if (prefecture && city) {
+            document.getElementById('prefecture').value = prefecture;
+            document.getElementById('city').value = city;
             document.getElementById('address').focus();
-            addressSearchCount++; lastAddressSearchTime=Date.now();
+            addressSearchCount++;
+            lastAddressSearchTime = Date.now();
             saveToStorage(STORAGE_KEYS.searchCount, addressSearchCount.toString());
             saveAddressToStorage();
-          } else { throw new Error('Invalid address data'); }
+          } else {
+            throw new Error('Invalid address data');
+          }
         } else {
-          errorDiv.textContent='該当する住所が見つかりませんでした。郵便番号をご確認ください。';
-          errorDiv.style.display='block';
+          errorDiv.textContent = '該当する住所が見つかりませんでした。郵便番号をご確認ください。';
+          errorDiv.style.display = 'block';
         }
-      } catch(e){
+      } catch (e) {
         console.error('Address search error:', e);
-        errorDiv.textContent = (e.name==='AbortError') ? '検索がタイムアウトしました。時間をおいて再度お試しください。' : '住所検索でエラーが発生しました。時間をおいて再度お試しください。';
-        errorDiv.style.display='block';
+        errorDiv.textContent = (e.name === 'AbortError')
+          ? '検索がタイムアウトしました。時間をおいて再度お試しください。'
+          : '住所検索でエラーが発生しました。時間をおいて再度お試しください。';
+        errorDiv.style.display = 'block';
       } finally {
-        btn.disabled=false; btn.textContent=original;
+        btn.disabled = false;
+        btn.textContent = original;
       }
     }
 
-    function updateSecurityStatus(){
+    function updateSecurityStatus() {
       const indicator = document.getElementById('securityIndicator');
-      if (location.protocol === 'https:') { indicator.className='security-indicator secure'; indicator.innerHTML='🔒 セキュア接続'; }
-      else { indicator.className='security-indicator warning'; indicator.innerHTML='⚠️ 非セキュア接続'; }
+      if (location.protocol === 'https:') {
+        indicator.className = 'security-indicator secure';
+        indicator.innerHTML = '🔒 セキュア接続';
+      } else {
+        indicator.className = 'security-indicator warning';
+        indicator.innerHTML = '⚠️ 非セキュア接続';
+      }
     }
 
-    function setupEventListeners(){
-      const pc=document.getElementById('postalCode');
-      if(pc){
-        pc.addEventListener('keypress',e=>{ if(e.key==='Enter'){ e.preventDefault(); searchAddress(); }});
-        pc.addEventListener('input',e=>{ e.target.value=sanitizeInput(e.target.value).replace(/[^\d]/g,'').slice(0,7); saveAddressToStorage(); });
+    function setupEventListeners() {
+      const pc = document.getElementById('postalCode');
+      if (pc) {
+        pc.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); searchAddress(); } });
+        pc.addEventListener('input', (e) => { e.target.value = sanitizeInput(e.target.value).replace(/[^\d]/g, '').slice(0, 7); saveAddressToStorage(); });
       }
 
-      const lastName=document.getElementById('lastName');
-      const firstName=document.getElementById('firstName');
-      [lastName, firstName].forEach(f=>{
-        if(f){
-          f.addEventListener('blur', saveNameToStorage);
-          f.addEventListener('input', e=>{ e.target.value=sanitizeInput(e.target.value).slice(0,50); });
+      const lastName = document.getElementById('lastName');
+      const firstName = document.getElementById('firstName');
+      [lastName, firstName].forEach(field => {
+        if (field) {
+          field.addEventListener('blur', saveNameToStorage);
+          field.addEventListener('input', (e) => { e.target.value = sanitizeInput(e.target.value).slice(0, 50); });
         }
       });
 
-      const phone=document.getElementById('phone');
-      if(phone){
+      const phone = document.getElementById('phone');
+      if (phone) {
         phone.addEventListener('blur', savePhoneToStorage);
-        phone.addEventListener('input', e=>{ e.target.value=sanitizeInput(e.target.value).replace(/[^\d]/g,'').slice(0,15); });
+        phone.addEventListener('input', (e) => { e.target.value = sanitizeInput(e.target.value).replace(/[^\d]/g, '').slice(0, 15); });
       }
 
-      ['prefecture','city','address','building'].forEach(id=>{
-        const field=document.getElementById(id);
-        if(field){
+      ['prefecture', 'city', 'address', 'building'].forEach(id => {
+        const field = document.getElementById(id);
+        if (field) {
           field.addEventListener('blur', saveAddressToStorage);
-          field.addEventListener('input', e=>{
-            const max = id==='prefecture'?10:(id==='city'?50:100);
-            e.target.value=sanitizeInput(e.target.value).slice(0,max);
+          field.addEventListener('input', (e) => {
+            const maxLength = id === 'prefecture' ? 10 : (id === 'city' ? 50 : 100);
+            e.target.value = sanitizeInput(e.target.value).slice(0, maxLength);
           });
         }
       });
 
-      const orderDetails=document.getElementById('orderDetails');
-      if(orderDetails){
-        orderDetails.addEventListener('input', e=>{
-          e.target.value=sanitizeInput(e.target.value).slice(0,1000);
-        });
+      const orderDetails = document.getElementById('orderDetails');
+      if (orderDetails) {
+        orderDetails.addEventListener('input', (e) => { e.target.value = sanitizeInput(e.target.value).slice(0, 1000); });
       }
     }
 
-    function selectPayment(el){
-      document.querySelectorAll('.one').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
-      el.classList.add('active'); el.setAttribute('aria-pressed','true');
+    function selectPayment(el) {
+      document.querySelectorAll('.one').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+      el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
       paymentMethod = sanitizeInput(el.innerText.trim());
     }
-    function selectDelivery(el){
-      document.querySelectorAll('.two').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
-      el.classList.add('active'); el.setAttribute('aria-pressed','true');
+
+    function selectDelivery(el) {
+      document.querySelectorAll('.two').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+      el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
       deliveryMethod = sanitizeInput(el.innerText.trim());
     }
 
-    // ✅ LIFF初期化：堅牢版
-    async function initLiff(){
+    // ===== LIFF 初期化（堅牢） =====
+    async function initLiff() {
       if (typeof liff === 'undefined') {
         console.warn('LIFF SDK not loaded');
         return;
       }
-      try{
+      try {
         await liff.init({ liffId: LIFF_ID });
 
         if (!liff.isInClient()) {
-          const indicator=document.getElementById('securityIndicator');
-          indicator.className='security-indicator warning';
-          indicator.innerHTML='ℹ️ LINEアプリ内で開くと送信できます';
-        } else if (!liff.isLoggedIn()){
+          const indicator = document.getElementById('securityIndicator');
+          indicator.className = 'security-indicator warning';
+          indicator.innerHTML = 'ℹ️ LINEアプリ内で開くと送信できます';
+        } else if (!liff.isLoggedIn()) {
           liff.login({ redirectUri: window.location.href });
           return; // リダイレクト
         }
@@ -295,42 +701,42 @@
 
         liffReady = true;
         console.log('LIFF init OK');
-      } catch(err){
+      } catch (err) {
         liffReady = false;
         console.error('LIFF init failed:', err);
-        const indicator=document.getElementById('securityIndicator');
-        indicator.className='security-indicator warning';
-        indicator.innerHTML='⚠️ LIFF初期化エラー';
+        const indicator = document.getElementById('securityIndicator');
+        indicator.className = 'security-indicator warning';
+        indicator.innerHTML = '⚠️ LIFF初期化エラー';
         alert(
           'LIFF初期化に失敗しました。\n' +
           '・liffId とエンドポイントURLの一致\n' +
-          '・ページが https で配信されているか\n' +
-          '・CSP(connect-src) の許可先\n' +
-          '・LIFF権限（chat_message.write）\n' +
-          'を確認してください。\n\n詳細: ' + (err?.message || String(err))
+          '・https 配信\n' +
+          '・CSP(connect-src) 設定\n' +
+          '・LIFF権限（chat_message.write）\n\n' +
+          '詳細: ' + (err?.message || String(err))
         );
       }
     }
 
-    // ✅ 送信：必要なら再初期化を試みる
-    async function submitForm(){
-      try{
+    // ===== 送信（必要なら再初期化） =====
+    async function submitForm() {
+      try {
+        // 入力保存 & バリデーション
         saveNameToStorage(); savePhoneToStorage(); saveAddressToStorage();
-
         const lv = validateName(document.getElementById('lastName').value);
         const fv = validateName(document.getElementById('firstName').value);
         const pv = validatePhone(document.getElementById('phone').value);
         const av = validateAddress(document.getElementById('address').value);
-
         showFieldValidation('lastName', lv);
         showFieldValidation('firstName', fv);
         showFieldValidation('phone', pv);
         showFieldValidation('address', av);
 
+        // LIFF ガード
         if (typeof liff === 'undefined') { alert('LINE環境で実行してください（LIFF SDK未読込）。'); return; }
         if (!liffReady) {
           try { await liff.init({ liffId: LIFF_ID }); liffReady = true; }
-          catch(e){ alert('初期化中です。少し待ってからもう一度お試しください。\n（liffId/https/CSP設定をご確認ください）'); return; }
+          catch (e) { alert('初期化中です。少し待ってからもう一度お試しください。\n（liffId/https/CSP設定をご確認ください）'); return; }
         }
         if (!liff.isInClient()) { alert('このフォームの送信はLINEアプリ内でのみ可能です。\n公式LINEのボタン（LIFF）から開いてください。'); return; }
         if (!liff.isLoggedIn()) { liff.login({ redirectUri: window.location.href }); return; }
@@ -345,15 +751,18 @@
           lastName: lv.value,
           firstName: fv.value,
           orderDetails: sanitizeInput(document.getElementById('orderDetails').value) || '記載なし',
-          paymentMethod, deliveryMethod,
+          paymentMethod,
+          deliveryMethod,
           phone: pv.value,
-          postalCode, prefecture, city,
+          postalCode,
+          prefecture,
+          city,
           address: av.value,
           building: sanitizeInput(document.getElementById('building').value) || '',
           timestamp: new Date().toLocaleString('ja-JP')
         };
 
-        let messageText =
+        const messageText =
           '≪ご注文内容≫\n' +
           '【お名前】\n' + formData.lastName + ' ' + formData.firstName + '\n\n' +
           '【ご注文内容】\n' + formData.orderDetails + '\n\n' +
@@ -371,24 +780,26 @@
         alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。');
         sessionStorage.clear();
         liff.closeWindow();
-      } catch (error){
+      } catch (error) {
         console.error('Form submission error:', error);
         alert('予期しないエラーが発生しました：' + (error && error.message ? error.message : '詳細不明'));
       }
     }
 
-    document.addEventListener('DOMContentLoaded', function(){
+    // ===== 起動時処理 =====
+    document.addEventListener('DOMContentLoaded', function () {
       updateSecurityStatus();
       addressSearchCount = parseInt(loadFromStorage(STORAGE_KEYS.searchCount) || '0');
-      initLiff();                 // ← 初期化スタート
+      initLiff();                 // 初期化スタート
       loadNameFromStorage();
       loadPhoneFromStorage();
       loadAddressFromStorage();
       setupEventListeners();
     });
 
-    window.addEventListener('error', e=>console.error('Global error:', e.error));
-    window.addEventListener('unhandledrejection', e=>console.error('Unhandled promise rejection:', e.reason));
+    // グローバルエラーハンドラ
+    window.addEventListener('error', (e) => { console.error('Global error:', e.error); });
+    window.addEventListener('unhandledrejection', (e) => { console.error('Unhandled promise rejection:', e.reason); });
   </script>
 </body>
 </html>
