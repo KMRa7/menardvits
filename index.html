@@ -7,7 +7,7 @@
   <title>ご注文フォーム</title>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
-    /* ===== Calm & Elegant Theme (same as before, minor text tweaks) ===== */
+    /* ===== Calm & Elegant Theme ===== */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     :root {
@@ -127,7 +127,7 @@
     .error-message { color: #b91c1c; font-size: 13px; margin-top: 6px; }
     .hidden { display: none !important; }
 
-    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !重要; } }
 
     @media (max-width: 768px) {
       body { padding: 20px 12px; }
@@ -241,7 +241,7 @@
     let deliveryMethod = '';
 
     const NAME_KEY = 'orderForm:name';
-    const ADDRESS_KEY = 'orderForm:address'; // 住所＆電話の保存キー
+    const ADDRESS_KEY = 'orderForm:address';
 
     // ===== ローカル保存：読込 =====
     function loadNameFromStorage() {
@@ -251,9 +251,7 @@
         const { lastName, firstName } = JSON.parse(raw);
         if (lastName) document.getElementById('lastName').value = lastName;
         if (firstName) document.getElementById('firstName').value = firstName;
-      } catch (e) {
-        console.warn('名前の読込に失敗しました', e);
-      }
+      } catch (e) { console.warn('名前の読込に失敗しました', e); }
     }
     function loadAddressFromStorage() {
       try {
@@ -263,9 +261,7 @@
         ['phone','postalCode','prefecture','city','address','building'].forEach(id => {
           if (obj[id]) document.getElementById(id).value = obj[id];
         });
-      } catch (e) {
-        console.warn('住所の読込に失敗しました', e);
-      }
+      } catch (e) { console.warn('住所の読込に失敗しました', e); }
     }
 
     // ===== ローカル保存：保存 =====
@@ -273,10 +269,7 @@
       try {
         const lastName = (document.getElementById('lastName').value || '').trim();
         const firstName = (document.getElementById('firstName').value || '').trim();
-        if (!lastName && !firstName) {
-          localStorage.removeItem(NAME_KEY);
-          return;
-        }
+        if (!lastName && !firstName) { localStorage.removeItem(NAME_KEY); return; }
         localStorage.setItem(NAME_KEY, JSON.stringify({ lastName, firstName, savedAt: Date.now() }));
       } catch (e) { console.warn('名前の保存に失敗しました', e); }
     }
@@ -292,10 +285,7 @@
           savedAt: Date.now()
         };
         const anyFilled = Object.values(obj).some(v => typeof v === 'string' ? v.length > 0 : false);
-        if (!anyFilled) {
-          localStorage.removeItem(ADDRESS_KEY);
-          return;
-        }
+        if (!anyFilled) { localStorage.removeItem(ADDRESS_KEY); return; }
         localStorage.setItem(ADDRESS_KEY, JSON.stringify(obj));
       } catch (e) { console.warn('住所の保存に失敗しました', e); }
     }
@@ -352,8 +342,8 @@
       }
     }
 
-    // ===== LIFF初期化＋準備完了フラグ =====
-    let liffReady = false;
+    // ===== LIFF初期化＋準備フラグ =====
+    window.__liffReady = false;
 
     async function initLiff() {
       if (typeof liff === 'undefined') {
@@ -362,21 +352,21 @@
         try {
           await liff.init({ liffId: '2008127424-G7Lwv7qD' });
           console.log('LIFF初期化成功');
-    
+
           if (!liff.isLoggedIn()) {
-            liff.login();
-            return; // リダイレクト
+            liff.login(); // リダイレクト
+            return;
           }
-    
+
           if (!liff.isInClient()) {
-            console.log('外部ブラウザ表示。sendMessages不可→shareTargetPicker等へフォールバック');
+            console.log('外部ブラウザ表示。sendMessages不可→shareTargetPicker/コピーにフォールバック');
           }
-    
-          window.__liffReady = true; // ← グローバル目印
+
+          window.__liffReady = true;
         } catch (err) {
           console.error('LIFF初期化失敗', err);
         } finally {
-          // ここで必ずボタンを有効化（初期化失敗でも押せるようにする）
+          // 失敗しても必ずボタンを有効化（ユーザーを詰ませない）
           const btn = document.getElementById('section-message');
           if (btn) btn.disabled = false;
         }
@@ -411,16 +401,20 @@
       // 既存保存値をロード
       loadNameFromStorage();
       loadAddressFromStorage();
+
+      // 3秒経過時の保険（透明/タップ不可対策）
+      setTimeout(() => {
+        const btn = document.getElementById('section-message');
+        if (btn && btn.disabled) {
+          console.warn('LIFF未準備/失敗の可能性。フォールバックで送信ボタンを有効化します。');
+          btn.disabled = false;
+        }
+      }, 3000);
     });
 
     // ===== 送信 =====
     async function submitForm() {
-      // LIFF準備待ち
-      if (!liffReady) {
-        alert('初期化中です。数秒後にもう一度お試しください。');
-        return;
-      }
-
+      // LIFFの準備がなくても押せる設計。中でフォールバック分岐。
       saveNameToStorage();
       saveAddressToStorage();
 
@@ -469,20 +463,24 @@
         );
 
       try {
-        if (liff.isInClient()) {
+        if (typeof liff !== 'undefined' && window.__liffReady && liff.isInClient()) {
           // LINEアプリ内 → sendMessages
           await liff.sendMessages([{ type: 'text', text: messageText }]);
           alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。');
           liff.closeWindow();
-        } else if (liff.isApiAvailable && liff.isApiAvailable('shareTargetPicker')) {
-          // 外部ブラウザ → shareTargetPicker フォールバック
+          return;
+        }
+
+        if (typeof liff !== 'undefined' && liff.isApiAvailable && liff.isApiAvailable('shareTargetPicker')) {
+          // 外部ブラウザ → shareTargetPicker
           await liff.shareTargetPicker([{ type: 'text', text: messageText }]);
           alert('ご注文内容をLINEで共有しました。店舗側でも確認します。');
-        } else {
-          // 最終フォールバック：クリップボードにコピー
-          await navigator.clipboard.writeText(messageText);
-          alert('現在の環境では送信できませんでした。内容をコピーしましたので、LINEトークに貼り付けて送信してください。');
+          return;
         }
+
+        // 最終フォールバック：クリップボードへコピー
+        await navigator.clipboard.writeText(messageText);
+        alert('現在の環境では自動送信ができませんでした。内容をコピーしましたので、LINEトークに貼り付けて送信してください。');
       } catch (err) {
         console.error('メッセージ送信失敗', err);
         alert('送信に失敗しました。LINEアプリ内から開き直すか、再度お試しください。');
