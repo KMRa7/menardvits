@@ -4,14 +4,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.line-scdn.net https://kit.fontawesome.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://kit.fontawesome.com; font-src https://fonts.gstatic.com https://kit.fontawesome.com; connect-src 'self' https://zipcloud.ibsnet.co.jp https://api.line.me; img-src 'self' data: https:; frame-ancestors 'none';" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
   <title>ご注文フォーム</title>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
     /* ===============================
-       Calm & Elegant Theme
-       - 落ち着いた配色・最小限アニメーション
-       - 可読性と余白重視、アクセシビリティ改善
-       - アクセントカラーにご指定 #ffdddd を使用
+       Calm & Elegant Theme with Security Enhancements
        =============================== */
 
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -20,18 +21,23 @@
       /* Base neutrals */
       --bg: #f6f6f6;
       --panel: #ffffff;
-      --ink-900: #111827; /* text */
-      --ink-700: #374151; /* heading/sub */
-      --ink-500: #6b7280; /* muted */
-      --line: #e5e7eb;    /* borders */
+      --ink-900: #111827;
+      --ink-700: #374151;
+      --ink-500: #6b7280;
+      --line: #e5e7eb;
 
-      /* Accent (soft pink as requested) */
+      /* Accent */
       --accent-50: #fffbfc;
-      --accent-100: #ffefef; /* ≈ #ffdddd より僅かに淡く背景用 */
-      --accent-200: #ffdddd; /* リクエスト色 */
+      --accent-100: #ffefef;
+      --accent-200: #ffdddd;
       --accent-300: #f6c8c8;
-      --accent-500: #df9b9b; /* ボタン/フォーカス */
-      --accent-600: #c57f7f; /* hover */
+      --accent-500: #df9b9b;
+      --accent-600: #c57f7f;
+
+      /* Security colors */
+      --security-green: #10b981;
+      --security-yellow: #f59e0b;
+      --security-red: #ef4444;
 
       /* Shadows */
       --shadow: 0 2px 10px rgba(17, 24, 39, 0.06);
@@ -78,6 +84,36 @@
       border-radius: var(--r-lg) var(--r-lg) 0 0;
     }
 
+    /* Security status indicator */
+    .security-indicator {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      z-index: 100;
+    }
+
+    .security-indicator.secure {
+      color: var(--security-green);
+      border-color: var(--security-green);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .security-indicator.warning {
+      color: var(--security-yellow);
+      border-color: var(--security-yellow);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
     h1 {
       margin: 8px 0 20px;
       font-size: clamp(22px, 3.2vw, 28px);
@@ -118,6 +154,16 @@
       border-radius: var(--r-md);
       color: var(--ink-700);
       font-size: 14px;
+    }
+
+    .security-notice {
+      margin: 8px 0 16px;
+      padding: 12px 14px;
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid var(--security-green);
+      border-radius: var(--r-md);
+      color: var(--ink-700);
+      font-size: 13px;
     }
 
     label.label {
@@ -200,7 +246,33 @@
     .side-nav a:hover { background: var(--accent-100); }
 
     .error-message { color: #b91c1c; font-size: 13px; margin-top: 6px; }
-    .hidden { display: none !important; }
+
+    .clear-data-btn {
+      appearance: none; cursor: pointer;
+      padding: 8px 12px; margin: 16px 0;
+      border: 1px solid #dc2626;
+      background: #fff; color: #dc2626;
+      border-radius: var(--r-md);
+      font-weight: 600; font-size: 13px;
+      transition: background .2s var(--ease);
+    }
+    .clear-data-btn:hover { background: #fef2f2; }
+
+    /* Validation styles */
+    .field-valid { border-color: var(--security-green) !important; }
+    .field-invalid { border-color: var(--security-red) !important; }
+
+    /* Rate limiting indicator */
+    .rate-limit-notice {
+      margin: 8px 0 16px;
+      padding: 8px 12px;
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px solid var(--security-yellow);
+      border-radius: var(--r-md);
+      color: var(--ink-700);
+      font-size: 12px;
+      display: none;
+    }
 
     /* Reduce motion for users who prefer it */
     @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -210,10 +282,11 @@
       .container { padding: 20px; }
       .side-nav { right: 8px; }
       .side-nav a { width: 40px; height: 40px; }
+      .security-indicator { top: 12px; right: 12px; }
     }
-      /* Mobile-first refinements */
+
     @media (max-width: 640px) {
-      html, body { font-size: 16px; } /* iOSズーム抑止 */
+      html, body { font-size: 16px; }
       body { padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) calc(84px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
       .container { border-radius: 14px; padding: 16px; }
       .grid-buttons { grid-template-columns: 1fr; }
@@ -239,14 +312,13 @@
     .container::after {
         content: "";
         display: block;
-        height: 140px; /* フッター高さ＋余裕分 */
+        height: 140px;
     }
 
   </style>
 </head>
 
 <body>
-  <!-- 右側の追従ナビ（スマホはCSSで非表示） -->
   <nav class="side-nav" aria-label="ページ内ナビゲーション">
     <a href="#section-message" title="送信へ移動"><span aria-hidden>⇩</span></a>
   </nav>
@@ -258,15 +330,18 @@
     <div class="section-header"><span class="chip required">必須</span>お名前をお願いします</div>
     <p class="info-text">お手数ですがお名前の記載をお願いいたします。</p>
     <label class="label" for="lastName">姓</label>
-    <input type="text" id="lastName" placeholder="姓" autocomplete="family-name" />
+    <input type="text" id="lastName" placeholder="姓" autocomplete="family-name" maxlength="50" />
+    <div class="error-message" id="lastNameError" style="display:none;"></div>
+    
     <label class="label" for="firstName">名</label>
-    <input type="text" id="firstName" placeholder="名" autocomplete="given-name" />
+    <input type="text" id="firstName" placeholder="名" autocomplete="given-name" maxlength="50" />
+    <div class="error-message" id="firstNameError" style="display:none;"></div>
 
     <!-- ご注文内容 -->
     <div class="section-header"><span class="chip optional">任意</span>ご注文の商品をご記入ください</div>
     <p class="info-text">・商品名、色番号<br />・数量<br />・その他ご不明な点があれば何でもどうぞ</p>
     <label class="label" for="orderDetails">ご注文内容</label>
-    <textarea id="orderDetails" rows="4" placeholder="ご注文内容をご記入ください"></textarea>
+    <textarea id="orderDetails" rows="4" placeholder="ご注文内容をご記入ください" maxlength="1000"></textarea>
 
     <!-- 支払い方法 -->
     <div class="section-header"><span class="chip required">必須</span>お支払い方法を選んでください</div>
@@ -284,46 +359,44 @@
       <button type="button" class="btn-option two" onclick="selectDelivery(this)" aria-pressed="false">店頭受け取り</button>
     </div>
 
-    <!-- 初回注文確認 -->
-    <div class="section-header"><span class="chip required">必須</span>ご注文は初めてですか？</div>
-    <div class="grid-buttons" role="group" aria-label="初回注文かどうか">
-      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, true)" aria-pressed="false">はい</button>
-      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, false)" aria-pressed="false">いいえ</button>
+    <!-- 連絡先・住所情報 -->
+    <label class="label"><span class="chip required">必須</span>お電話番号</label>
+    <p class="info-text">日中にご連絡がつく番号をご記入ください。</p>
+    <input type="tel" id="phone" inputmode="tel" autocomplete="tel" placeholder="09012345678（ハイフンなし）" maxlength="15">
+    <div class="error-message" id="phoneError" style="display:none;"></div>
+
+    <label class="label"><span class="chip required">必須</span>お届け先住所</label>
+
+    <label class="label" for="postalCode">郵便番号</label>
+    <div class="postal-input-container">
+      <input type="text" id="postalCode" inputmode="numeric" pattern="\d{7}" placeholder="例: 1000001（7桁・ハイフン不要）" maxlength="7">
+      <button type="button" class="btn-subtle" onclick="searchAddress()" id="searchBtn">住所検索</button>
+    </div>
+    <div class="error-message" id="postalError" style="display:none;"></div>
+    <div class="rate-limit-notice" id="rateLimitNotice">
+      住所検索の利用回数が上限に近づいています。しばらく時間をおいてからお試しください。
     </div>
 
-    <!-- 初回注文者向け -->
-    <section id="firstTimeSection" class="hidden" aria-live="polite">
-      <label class="label"><span class="chip required">必須</span>初回のお客様 - お電話番号</label>
-      <p class="info-text">日中にご連絡がつく番号をご記入ください。</p>
-      <input type="tel" id="phone" inputmode="tel" autocomplete="tel" placeholder="09012345678（ハイフンなし）">
+    <label class="label" for="prefecture">都道府県</label>
+    <input type="text" id="prefecture" placeholder="都道府県" readonly maxlength="10" />
 
-      <label class="label"><span class="chip required">必須</span>初回のお客様 - お届け先住所</label>
-      <p class="info-text">個人情報は適切に管理いたします。<br>ご安心のうえご記入ください。</p>
+    <label class="label" for="city">市区町村</label>
+    <input type="text" id="city" placeholder="市区町村" readonly maxlength="50" />
 
-      <label class="label" for="postalCode">郵便番号</label>
-      <div class="postal-input-container">
-        <input type="text" id="postalCode" inputmode="numeric" pattern="\d{7}" placeholder="例: 1000001（7桁・ハイフン不要）">
-        <button type="button" class="btn-subtle" onclick="searchAddress()" id="searchBtn">住所検索</button>
-      </div>
-      <div class="error-message" id="postalError" style="display:none;"></div>
+    <label class="label" for="address">番地</label>
+    <input type="text" id="address" placeholder="番地を入力してください" maxlength="100" />
+    <div class="error-message" id="addressError" style="display:none;"></div>
 
-      <label class="label" for="prefecture">都道府県</label>
-      <input type="text" id="prefecture" placeholder="都道府県" readonly />
+    <label class="label" for="building">マンション・ビル名（任意）</label>
+    <input type="text" id="building" placeholder="マンション・ビル名（任意）" maxlength="100" />
 
-      <label class="label" for="city">市区町村</label>
-      <input type="text" id="city" placeholder="市区町村" readonly />
-
-      <label class="label" for="address">番地</label>
-      <input type="text" id="address" placeholder="番地を入力してください" />
-
-      <label class="label" for="building">マンション・ビル名（任意）</label>
-      <input type="text" id="building" placeholder="マンション・ビル名（任意）" />
-    </section>
+    <!-- 保存データクリアボタン -->
+    <button type="button" class="clear-data-btn" onclick="clearAllSavedData()">保存済み入力データをクリア</button>
 
     <div style="margin-top: 20px;"></div>
   </main>
 
-  <!-- 画面下部に固定の送信バー（スマホ最適化） -->
+  <!-- 画面下部に固定の送信バー -->
   <div class="footer-cta">
     <button class="btn-accent" onclick="submitForm()" id="section-message">送信</button>
   </div>
@@ -331,113 +404,299 @@
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
+    // セキュリティ強化されたグローバル変数
     let paymentMethod = '';
     let deliveryMethod = '';
-    let isFirstTime = null;
+    let addressSearchCount = 0;
+    const MAX_ADDRESS_SEARCHES = 10; // 住所検索の上限
+    let lastAddressSearchTime = 0;
+    const SEARCH_COOLDOWN = 2000; // 2秒のクールダウン
 
-    const NAME_KEY = 'orderForm:name';
+    // 暗号化用のシンプルなキー（実際のアプリケーションではより安全な方法を使用）
+    const ENCRYPTION_KEY = 'orderForm2024secure';
 
-    function loadNameFromStorage() {
+    // セキュリティ強化されたストレージキー
+    const STORAGE_KEYS = {
+      name: 'secureOrderForm:name:encrypted',
+      phone: 'secureOrderForm:phone:encrypted',
+      address: 'secureOrderForm:address:encrypted',
+      searchCount: 'secureOrderForm:searchCount'
+    };
+
+    // シンプルなXOR暗号化（デモ用途）
+    function simpleEncrypt(text, key) {
       try {
-        const raw = localStorage.getItem(NAME_KEY);
-        if (!raw) return;
-        const { lastName, firstName } = JSON.parse(raw);
-        if (lastName) document.getElementById('lastName').value = lastName;
-        if (firstName) document.getElementById('firstName').value = firstName;
+        const encrypted = [];
+        for (let i = 0; i < text.length; i++) {
+          encrypted.push(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+        }
+        return btoa(encrypted.join(','));
       } catch (e) {
-        console.warn('名前の読込に失敗しました', e);
+        console.error('Encryption failed:', e);
+        return null;
       }
     }
 
+    function simpleDecrypt(encrypted, key) {
+      try {
+        const decrypted = [];
+        const data = atob(encrypted).split(',');
+        for (let i = 0; i < data.length; i++) {
+          decrypted.push(String.fromCharCode(data[i] ^ key.charCodeAt(i % key.length)));
+        }
+        return decrypted.join('');
+      } catch (e) {
+        console.error('Decryption failed:', e);
+        return null;
+      }
+    }
+
+    // 入力値のサニタイゼーション
+    function sanitizeInput(input) {
+      if (typeof input !== 'string') return '';
+      return input
+        .replace(/[<>\"'&]/g, '') // XSS対策
+        .replace(/[\x00-\x1f\x7f-\x9f]/g, '') // 制御文字除去
+        .trim();
+    }
+
+    // バリデーション関数
+    function validateName(name) {
+      const sanitized = sanitizeInput(name);
+      if (!sanitized || sanitized.length === 0) {
+        return { isValid: false, message: '名前を入力してください。' };
+      }
+      if (sanitized.length > 50) {
+        return { isValid: false, message: '名前は50文字以内で入力してください。' };
+      }
+      if (!/^[ぁ-ん ァ-ヶa-zA-Z一-龯]+$/.test(sanitized)) {
+        return { isValid: false, message: '有効な名前を入力してください。' };
+      }
+      return { isValid: true, value: sanitized };
+    }
+
+    function validatePhone(phone) {
+      const sanitized = sanitizeInput(phone).replace(/[^\d]/g, '');
+      if (!sanitized || sanitized.length === 0) {
+        return { isValid: false, message: '電話番号を入力してください。' };
+      }
+      if (!/^0\d{9,10}$/.test(sanitized)) {
+        return { isValid: false, message: '有効な電話番号を入力してください（例: 09012345678）。' };
+      }
+      return { isValid: true, value: sanitized };
+    }
+
+    function validateAddress(address) {
+      const sanitized = sanitizeInput(address);
+      if (!sanitized || sanitized.length === 0) {
+        return { isValid: false, message: '住所を入力してください。' };
+      }
+      if (sanitized.length > 100) {
+        return { isValid: false, message: '住所は100文字以内で入力してください。' };
+      }
+      return { isValid: true, value: sanitized };
+    }
+
+    // セキュアな保存関数
     function saveNameToStorage() {
       try {
-        const lastName = (document.getElementById('lastName').value || '').trim();
-        const firstName = (document.getElementById('firstName').value || '').trim();
-        if (!lastName && !firstName) {
-          localStorage.removeItem(NAME_KEY);
+        const lastNameValidation = validateName(document.getElementById('lastName').value);
+        const firstNameValidation = validateName(document.getElementById('firstName').value);
+
+        showFieldValidation('lastName', lastNameValidation);
+        showFieldValidation('firstName', firstNameValidation);
+
+        if (!lastNameValidation.isValid || !firstNameValidation.isValid) {
           return;
         }
-        localStorage.setItem(NAME_KEY, JSON.stringify({
-          lastName, firstName, savedAt: Date.now()
-        }));
-      } catch (e) {
-        console.warn('名前の保存に失敗しました', e);
-      }
-    }
 
-    function clearSavedName() {
-      localStorage.removeItem(NAME_KEY);
-    }
-
-    // LIFF初期化
-    document.addEventListener('DOMContentLoaded', function () {
-      if (typeof liff === 'undefined') {
-        console.error('LIFF SDK が読み込まれていません。');
-        return;
-      }
-      liff.init({ liffId: '2008001634-M7wLd2zR' })
-        .then(() => {
-          console.log('LIFF初期化成功');
-          if (!liff.isLoggedIn()) {
-            // ブラウザ直開き時などはログインを促す
-            try { liff.login(); } catch (e) { console.warn('liff.login() 失敗', e); }
-          }
-        })
-        .catch((err) => console.error('LIFF初期化失敗', err));
-    });
-
-    function selectPayment(el) {
-      document.querySelectorAll('.one').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      el.classList.add('active');
-      el.setAttribute('aria-pressed', 'true');
-      paymentMethod = el.innerText.trim();
-    }
-
-    function selectDelivery(el) {
-      document.querySelectorAll('.two').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      el.classList.add('active');
-      el.setAttribute('aria-pressed', 'true');
-      deliveryMethod = el.innerText.trim();
-    }
-
-    function selectFirstTime(el, firstTime) {
-      document.querySelectorAll('.first-time').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      el.classList.add('active');
-      el.setAttribute('aria-pressed', 'true');
-      isFirstTime = firstTime;
-
-      const sec = document.getElementById('firstTimeSection');
-      if (firstTime) {
-        sec.classList.remove('hidden');
-      } else {
-        sec.classList.add('hidden');
-        // フィールドクリア
-        ['phone','postalCode','prefecture','city','address','building'].forEach(id => {
-          const el2 = document.getElementById(id); if (el2) el2.value = '';
+        const data = JSON.stringify({
+          lastName: lastNameValidation.value,
+          firstName: firstNameValidation.value,
+          savedAt: Date.now()
         });
-        // エラー表示も隠す
-        const err = document.getElementById('postalError');
-        if (err) { err.style.display = 'none'; err.textContent = ''; }
+
+        const encrypted = simpleEncrypt(data, ENCRYPTION_KEY);
+        if (encrypted) {
+          sessionStorage.setItem(STORAGE_KEYS.name, encrypted);
+        }
+      } catch (e) {
+        console.error('Name save failed:', e);
       }
     }
 
+    function savePhoneToStorage() {
+      try {
+        const phoneValidation = validatePhone(document.getElementById('phone').value);
+        showFieldValidation('phone', phoneValidation);
+
+        if (!phoneValidation.isValid) {
+          return;
+        }
+
+        const encrypted = simpleEncrypt(phoneValidation.value, ENCRYPTION_KEY);
+        if (encrypted) {
+          sessionStorage.setItem(STORAGE_KEYS.phone, encrypted);
+        }
+      } catch (e) {
+        console.error('Phone save failed:', e);
+      }
+    }
+
+    function saveAddressToStorage() {
+      try {
+        const addressValidation = validateAddress(document.getElementById('address').value);
+        showFieldValidation('address', addressValidation);
+
+        const addressData = {
+          postalCode: sanitizeInput(document.getElementById('postalCode').value),
+          prefecture: sanitizeInput(document.getElementById('prefecture').value),
+          city: sanitizeInput(document.getElementById('city').value),
+          address: addressValidation.isValid ? addressValidation.value : '',
+          building: sanitizeInput(document.getElementById('building').value),
+          savedAt: Date.now()
+        };
+
+        if (!addressData.postalCode && !addressData.prefecture && !addressData.city && 
+            !addressData.address && !addressData.building) {
+          sessionStorage.removeItem(STORAGE_KEYS.address);
+          return;
+        }
+
+        const data = JSON.stringify(addressData);
+        const encrypted = simpleEncrypt(data, ENCRYPTION_KEY);
+        if (encrypted) {
+          sessionStorage.setItem(STORAGE_KEYS.address, encrypted);
+        }
+      } catch (e) {
+        console.error('Address save failed:', e);
+      }
+    }
+
+    // バリデーション結果の表示
+    function showFieldValidation(fieldId, validation) {
+      const field = document.getElementById(fieldId);
+      const errorDiv = document.getElementById(fieldId + 'Error');
+
+      if (!field || !errorDiv) return;
+
+      if (validation.isValid) {
+        field.classList.remove('field-invalid');
+        field.classList.add('field-valid');
+        errorDiv.style.display = 'none';
+      } else {
+        field.classList.remove('field-valid');
+        field.classList.add('field-invalid');
+        errorDiv.textContent = validation.message;
+        errorDiv.style.display = 'block';
+      }
+    }
+
+    // セキュアな読み込み関数
+    function loadNameFromStorage() {
+      try {
+        const encrypted = sessionStorage.getItem(STORAGE_KEYS.name);
+        if (!encrypted) return;
+
+        const decrypted = simpleDecrypt(encrypted, ENCRYPTION_KEY);
+        if (!decrypted) return;
+
+        const data = JSON.parse(decrypted);
+        if (data.lastName) document.getElementById('lastName').value = data.lastName;
+        if (data.firstName) document.getElementById('firstName').value = data.firstName;
+      } catch (e) {
+        console.warn('Name load failed:', e);
+        sessionStorage.removeItem(STORAGE_KEYS.name);
+      }
+    }
+
+    function loadPhoneFromStorage() {
+      try {
+        const encrypted = sessionStorage.getItem(STORAGE_KEYS.phone);
+        if (!encrypted) return;
+
+        const decrypted = simpleDecrypt(encrypted, ENCRYPTION_KEY);
+        if (decrypted) {
+          document.getElementById('phone').value = decrypted;
+        }
+      } catch (e) {
+        console.warn('Phone load failed:', e);
+        sessionStorage.removeItem(STORAGE_KEYS.phone);
+      }
+    }
+
+    function loadAddressFromStorage() {
+      try {
+        const encrypted = sessionStorage.getItem(STORAGE_KEYS.address);
+        if (!encrypted) return;
+
+        const decrypted = simpleDecrypt(encrypted, ENCRYPTION_KEY);
+        if (!decrypted) return;
+
+        const addressData = JSON.parse(decrypted);
+        
+        if (addressData.postalCode) document.getElementById('postalCode').value = addressData.postalCode;
+        if (addressData.prefecture) document.getElementById('prefecture').value = addressData.prefecture;
+        if (addressData.city) document.getElementById('city').value = addressData.city;
+        if (addressData.address) document.getElementById('address').value = addressData.address;
+        if (addressData.building) document.getElementById('building').value = addressData.building;
+      } catch (e) {
+        console.warn('Address load failed:', e);
+        sessionStorage.removeItem(STORAGE_KEYS.address);
+      }
+    }
+
+    // 保存されたすべてのデータをクリア
+    function clearAllSavedData() {
+      if (confirm('保存された入力データをすべて削除しますか？\n（現在の入力内容は残ります）')) {
+        try {
+          Object.values(STORAGE_KEYS).forEach(key => {
+            sessionStorage.removeItem(key);
+            localStorage.removeItem(key); // 旧バージョンのデータもクリア
+          });
+          alert('保存データをクリアしました。');
+        } catch (e) {
+          console.warn('データクリアに失敗しました', e);
+          alert('データクリアに失敗しました。');
+        }
+      }
+    }
+
+    // レート制限チェック
+    function checkRateLimit() {
+      const now = Date.now();
+      if (now - lastAddressSearchTime < SEARCH_COOLDOWN) {
+        return false;
+      }
+
+      const storedCount = parseInt(sessionStorage.getItem(STORAGE_KEYS.searchCount) || '0');
+      if (storedCount >= MAX_ADDRESS_SEARCHES) {
+        document.getElementById('rateLimitNotice').style.display = 'block';
+        return false;
+      }
+
+      return true;
+    }
+
+    // セキュリティ強化された住所検索
     async function searchAddress() {
-      const postal = document.getElementById('postalCode').value.replace(/[^\d]/g, '');
+      const postal = sanitizeInput(document.getElementById('postalCode').value).replace(/[^\d]/g, '');
       const errorDiv = document.getElementById('postalError');
       const btn = document.getElementById('searchBtn');
 
       errorDiv.style.display = 'none';
+      document.getElementById('rateLimitNotice').style.display = 'none';
+
+      // バリデーション
       if (postal.length !== 7) {
         errorDiv.textContent = '7桁の郵便番号を入力してください（例: 1000001）';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      // レート制限チェック
+      if (!checkRateLimit()) {
+        errorDiv.textContent = 'しばらく時間をおいてから再度お試しください。';
         errorDiv.style.display = 'block';
         return;
       }
@@ -447,20 +706,64 @@
       btn.textContent = '検索中…';
 
       try {
-        const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postal}`);
+        // タイムアウト設定
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒タイムアウト
+
+        const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postal}`, {
+          signal: controller.signal,
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
         const data = await res.json();
-        if (data.status === 200 && data.results && data.results.length > 0) {
+        
+        // レスポンス検証
+        if (typeof data !== 'object' || data === null) {
+          throw new Error('Invalid response format');
+        }
+
+        if (data.status === 200 && data.results && Array.isArray(data.results) && data.results.length > 0) {
           const r = data.results[0];
-          document.getElementById('prefecture').value = r.address1;
-          document.getElementById('city').value = r.address2 + r.address3;
-          document.getElementById('address').focus();
+          
+          // レスポンスデータのサニタイゼーション
+          const prefecture = sanitizeInput(r.address1 || '');
+          const city = sanitizeInput((r.address2 || '') + (r.address3 || ''));
+
+          if (prefecture && city) {
+            document.getElementById('prefecture').value = prefecture;
+            document.getElementById('city').value = city;
+            document.getElementById('address').focus();
+            
+            // 検索回数を記録
+            addressSearchCount++;
+            lastAddressSearchTime = Date.now();
+            sessionStorage.setItem(STORAGE_KEYS.searchCount, addressSearchCount.toString());
+            
+            saveAddressToStorage();
+          } else {
+            throw new Error('Invalid address data');
+          }
         } else {
           errorDiv.textContent = '該当する住所が見つかりませんでした。郵便番号をご確認ください。';
           errorDiv.style.display = 'block';
         }
       } catch (e) {
-        console.error('住所検索エラー:', e);
-        errorDiv.textContent = '住所検索でエラーが発生しました。時間をおいて再度お試しください。';
+        console.error('Address search error:', e);
+        
+        if (e.name === 'AbortError') {
+          errorDiv.textContent = '検索がタイムアウトしました。時間をおいて再度お試しください。';
+        } else {
+          errorDiv.textContent = '住所検索でエラーが発生しました。時間をおいて再度お試しください。';
+        }
         errorDiv.style.display = 'block';
       } finally {
         btn.disabled = false;
@@ -468,78 +771,269 @@
       }
     }
 
-    // Enter で住所検索 + 名前のローカル保存
-    document.addEventListener('DOMContentLoaded', () => {
-      const pc = document.getElementById('postalCode');
-      if (pc) {
-        pc.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchAddress(); });
-        pc.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^\d]/g, ''); });
+    // セキュリティステータス更新
+    function updateSecurityStatus() {
+      const indicator = document.getElementById('securityIndicator');
+      
+      if (location.protocol === 'https:') {
+        indicator.className = 'security-indicator secure';
+        indicator.innerHTML = '🔒 セキュア接続';
+      } else {
+        indicator.className = 'security-indicator warning';
+        indicator.innerHTML = '⚠️ 非セキュア接続';
       }
+    }
 
-      loadNameFromStorage();
+    // LIFF初期化（セキュリティ強化）
+    document.addEventListener('DOMContentLoaded', function () {
+      updateSecurityStatus();
+      
+      // 検索回数の初期化
+      const storedCount = parseInt(sessionStorage.getItem(STORAGE_KEYS.searchCount) || '0');
+      addressSearchCount = storedCount;
 
-      const ln = document.getElementById('lastName');
-      const fn = document.getElementById('firstName');
-      ln.addEventListener('change', saveNameToStorage);
-      fn.addEventListener('change', saveNameToStorage);
-      ln.addEventListener('input', saveNameToStorage);
-      fn.addEventListener('input', saveNameToStorage);
-    });
-
-    function submitForm() {
-      saveNameToStorage();
-      const formData = {
-        lastName: document.getElementById('lastName').value.trim(),
-        firstName: document.getElementById('firstName').value.trim(),
-        orderDetails: document.getElementById('orderDetails').value.trim(),
-        paymentMethod,
-        deliveryMethod,
-        isFirstTime,
-        phone: document.getElementById('phone')?.value.trim() || '',
-        postalCode: document.getElementById('postalCode')?.value.trim() || '',
-        prefecture: document.getElementById('prefecture')?.value.trim() || '',
-        city: document.getElementById('city')?.value.trim() || '',
-        address: document.getElementById('address')?.value.trim() || '',
-        building: document.getElementById('building')?.value.trim() || ''
-      };
-
-      // 必須チェック
-      if (!formData.lastName || !formData.firstName) { alert('お名前（姓・名）を入力してください。'); return; }
-      if (!formData.paymentMethod) { alert('お支払い方法を選択してください。'); return; }
-      if (!formData.deliveryMethod) { alert('お届け方法を選択してください。'); return; }
-      if (formData.isFirstTime === null) { alert('初回注文かどうかを選択してください。'); return; }
-
-      if (formData.isFirstTime) {
-        if (!formData.phone) { alert('初回のお客様は電話番号の入力が必要です。'); return; }
-        if (!formData.postalCode || !formData.prefecture || !formData.city || !formData.address) {
-          alert('初回のお客様は住所情報の入力が必要です。'); return;
-        }
-      }
-
-      let messageText = '≪ご注文内容≫\n' +
-        '【お名前】\n' + formData.lastName + ' ' + formData.firstName + '\n\n' +
-        '【ご注文内容】\n' + (formData.orderDetails || '記載なし') + '\n\n' +
-        '【お支払い方法】\n' + formData.paymentMethod + '\n\n' +
-        '【お届け方法】\n' + formData.deliveryMethod + '\n\n' +
-        '【初回注文】\n' + (formData.isFirstTime ? 'はい' : 'いいえ') + '\n\n';
-
-      if (formData.isFirstTime) {
-        messageText += '【お電話番号】\n' + formData.phone + '\n\n' +
-          '【お届け先住所】\n' + '〒' + formData.postalCode + '\n' +
-          formData.prefecture + formData.city + '\n' +
-          formData.address + '\n' + (formData.building || '');
-      }
-
-      // LIFF送信ガード
-      if (typeof liff === 'undefined' || !liff.isApiAvailable || !liff.isApiAvailable('sendMessages')) {
-        alert('LIFFメッセージ送信が利用できない環境です。LINE内から再度お試しください。');
+      if (typeof liff === 'undefined') {
+        console.error('LIFF SDK が読み込まれていません。');
         return;
       }
 
-      liff.sendMessages([{ type: 'text', text: messageText }])
-        .then(() => { alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。'); liff.closeWindow(); })
-        .catch((err) => { console.error('メッセージ送信失敗', err); alert('送信に失敗しました。もう一度お試しください。'); });
+      liff.init({ liffId: '2008001634-M7wLd2zR' })
+        .then(() => {
+          console.log('LIFF初期化成功');
+          if (!liff.isLoggedIn()) {
+            try { 
+              liff.login(); 
+            } catch (e) { 
+              console.warn('liff.login() 失敗', e); 
+            }
+          }
+        })
+        .catch((err) => console.error('LIFF初期化失敗', err));
+
+      // 保存データ読み込み
+      loadNameFromStorage();
+      loadPhoneFromStorage();
+      loadAddressFromStorage();
+
+      // イベントリスナー設定
+      setupEventListeners();
+    });
+
+    // イベントリスナー設定
+    function setupEventListeners() {
+      // 郵便番号フィールド
+      const pc = document.getElementById('postalCode');
+      if (pc) {
+        pc.addEventListener('keypress', (e) => { 
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            searchAddress(); 
+          }
+        });
+        pc.addEventListener('input', (e) => { 
+          e.target.value = sanitizeInput(e.target.value).replace(/[^\d]/g, '').slice(0, 7);
+          saveAddressToStorage();
+        });
+      }
+
+      // 名前フィールド
+      const lastName = document.getElementById('lastName');
+      const firstName = document.getElementById('firstName');
+      [lastName, firstName].forEach(field => {
+        if (field) {
+          field.addEventListener('blur', saveNameToStorage);
+          field.addEventListener('input', (e) => {
+            e.target.value = sanitizeInput(e.target.value).slice(0, 50);
+          });
+        }
+      });
+
+      // 電話番号フィールド
+      const phone = document.getElementById('phone');
+      if (phone) {
+        phone.addEventListener('blur', savePhoneToStorage);
+        phone.addEventListener('input', (e) => {
+          e.target.value = sanitizeInput(e.target.value).replace(/[^\d]/g, '').slice(0, 15);
+        });
+      }
+
+      // 住所フィールド
+      const addressFields = ['prefecture', 'city', 'address', 'building'];
+      addressFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+          field.addEventListener('blur', saveAddressToStorage);
+          field.addEventListener('input', (e) => {
+            const maxLength = fieldId === 'prefecture' ? 10 : (fieldId === 'city' ? 50 : 100);
+            e.target.value = sanitizeInput(e.target.value).slice(0, maxLength);
+          });
+        }
+      });
+
+      // 注文内容フィールド
+      const orderDetails = document.getElementById('orderDetails');
+      if (orderDetails) {
+        orderDetails.addEventListener('input', (e) => {
+          e.target.value = sanitizeInput(e.target.value).slice(0, 1000);
+        });
+      }
     }
+
+    function selectPayment(el) {
+      document.querySelectorAll('.one').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
+      paymentMethod = sanitizeInput(el.innerText.trim());
+    }
+
+    function selectDelivery(el) {
+      document.querySelectorAll('.two').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
+      deliveryMethod = sanitizeInput(el.innerText.trim());
+    }
+
+    // セキュリティ強化されたフォーム送信
+    function submitForm() {
+      try {
+        // 最新データを保存
+        saveNameToStorage();
+        savePhoneToStorage();
+        saveAddressToStorage();
+
+        // フォームデータの収集と検証
+        const lastNameValidation = validateName(document.getElementById('lastName').value);
+        const firstNameValidation = validateName(document.getElementById('firstName').value);
+        const phoneValidation = validatePhone(document.getElementById('phone').value);
+        const addressValidation = validateAddress(document.getElementById('address').value);
+
+        // バリデーション表示
+        showFieldValidation('lastName', lastNameValidation);
+        showFieldValidation('firstName', firstNameValidation);
+        showFieldValidation('phone', phoneValidation);
+        showFieldValidation('address', addressValidation);
+
+        // 必須項目チェック
+        if (!lastNameValidation.isValid) {
+          alert('お名前（姓）を正しく入力してください。');
+          document.getElementById('lastName').focus();
+          return;
+        }
+
+        if (!firstNameValidation.isValid) {
+          alert('お名前（名）を正しく入力してください。');
+          document.getElementById('firstName').focus();
+          return;
+        }
+
+        if (!paymentMethod) {
+          alert('お支払い方法を選択してください。');
+          return;
+        }
+
+        if (!deliveryMethod) {
+          alert('お届け方法を選択してください。');
+          return;
+        }
+
+        if (!phoneValidation.isValid) {
+          alert('電話番号を正しく入力してください。');
+          document.getElementById('phone').focus();
+          return;
+        }
+
+        const postalCode = sanitizeInput(document.getElementById('postalCode').value);
+        const prefecture = sanitizeInput(document.getElementById('prefecture').value);
+        const city = sanitizeInput(document.getElementById('city').value);
+
+        if (!postalCode || !prefecture || !city || !addressValidation.isValid) {
+          alert('住所情報を正しく入力してください。');
+          return;
+        }
+
+        // フォームデータの構築
+        const formData = {
+          lastName: lastNameValidation.value,
+          firstName: firstNameValidation.value,
+          orderDetails: sanitizeInput(document.getElementById('orderDetails').value) || '記載なし',
+          paymentMethod,
+          deliveryMethod,
+          phone: phoneValidation.value,
+          postalCode,
+          prefecture,
+          city,
+          address: addressValidation.value,
+          building: sanitizeInput(document.getElementById('building').value) || '',
+          timestamp: new Date().toLocaleString('ja-JP')
+        };
+
+        // メッセージ構築（サニタイズ済みデータを使用）
+        let messageText = '≪ご注文内容≫\n' +
+          '【お名前】\n' + formData.lastName + ' ' + formData.firstName + '\n\n' +
+          '【ご注文内容】\n' + formData.orderDetails + '\n\n' +
+          '【お支払い方法】\n' + formData.paymentMethod + '\n\n' +
+          '【お届け方法】\n' + formData.deliveryMethod + '\n\n' +
+          '【お電話番号】\n' + formData.phone + '\n\n' +
+          '【お届け先住所】\n' + '〒' + formData.postalCode + '\n' +
+          formData.prefecture + formData.city + '\n' +
+          formData.address + '\n' + formData.building + '\n\n' +
+          '【送信日時】\n' + formData.timestamp;
+
+        // LIFF送信チェック
+        if (typeof liff === 'undefined' || !liff.isApiAvailable || !liff.isApiAvailable('sendMessages')) {
+          alert('LIFFメッセージ送信が利用できない環境です。LINE内から再度お試しください。');
+          return;
+        }
+
+        // セキュリティ確認
+        if (!confirm('入力内容を確認してご注文を送信しますか？\n\n送信後の変更はできません。')) {
+          return;
+        }
+
+        // メッセージ送信
+        liff.sendMessages([{ type: 'text', text: messageText }])
+          .then(() => { 
+            alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。'); 
+            // 送信成功後は一時的なデータのみクリア
+            sessionStorage.clear();
+            liff.closeWindow(); 
+          })
+          .catch((err) => { 
+            console.error('メッセージ送信失敗', err); 
+            alert('送信に失敗しました。ネットワーク接続を確認してもう一度お試しください。'); 
+          });
+
+      } catch (error) {
+        console.error('Form submission error:', error);
+        alert('予期しないエラーが発生しました。ページを更新してもう一度お試しください。');
+      }
+    }
+
+    // セキュリティイベントリスナー
+    window.addEventListener('beforeunload', function() {
+      // ページ離脱時に機密情報をクリア（オプション）
+      try {
+        const sensitiveFields = ['lastName', 'firstName', 'phone'];
+        sensitiveFields.forEach(fieldId => {
+          const field = document.getElementById(fieldId);
+          if (field) field.value = '';
+        });
+      } catch (e) {
+        // エラーは無視
+      }
+    });
+
+    // CSPエラーハンドリング
+    window.addEventListener('securitypolicyviolation', function(e) {
+      console.error('CSP Violation:', e.violatedDirective, e.blockedURI);
+    });
+
   </script>
 </body>
 </html>
