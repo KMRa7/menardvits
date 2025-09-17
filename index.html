@@ -7,41 +7,26 @@
   <title>ご注文フォーム</title>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
-    /* ===============================
-       Calm & Elegant Theme
-       - 落ち着いた配色・最小限アニメーション
-       - 可読性と余白重視、アクセシビリティ改善
-       - アクセントカラーにご指定 #ffdddd を使用
-       =============================== */
-
+    /* ===== Calm & Elegant Theme (same as before, minor text tweaks) ===== */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     :root {
-      /* Base neutrals */
       --bg: #f6f6f6;
       --panel: #ffffff;
-      --ink-900: #111827; /* text */
-      --ink-700: #374151; /* heading/sub */
-      --ink-500: #6b7280; /* muted */
-      --line: #e5e7eb;    /* borders */
-
-      /* Accent (soft pink as requested) */
+      --ink-900: #111827;
+      --ink-700: #374151;
+      --ink-500: #6b7280;
+      --line: #e5e7eb;
       --accent-50: #fffbfc;
-      --accent-100: #ffefef; /* ≈ #ffdddd より僅かに淡く背景用 */
-      --accent-200: #ffdddd; /* リクエスト色 */
+      --accent-100: #ffefef;
+      --accent-200: #ffdddd;
       --accent-300: #f6c8c8;
-      --accent-500: #df9b9b; /* ボタン/フォーカス */
-      --accent-600: #c57f7f; /* hover */
-
-      /* Shadows */
+      --accent-500: #df9b9b;
+      --accent-600: #c57f7f;
       --shadow: 0 2px 10px rgba(17, 24, 39, 0.06);
       --shadow-lg: 0 8px 28px rgba(17, 24, 39, 0.08);
-
-      /* Radii */
       --r-md: 12px;
       --r-lg: 16px;
-
-      /* Motion */
       --ease: cubic-bezier(.2,.7,.2,1);
     }
 
@@ -70,7 +55,6 @@
       padding: clamp(20px, 3vw, 32px);
       position: relative;
     }
-
     .container::before {
       content: "";
       position: absolute; inset: 0 0 auto 0; height: 6px;
@@ -78,84 +62,35 @@
       border-radius: var(--r-lg) var(--r-lg) 0 0;
     }
 
-    h1 {
-      margin: 8px 0 20px;
-      font-size: clamp(22px, 3.2vw, 28px);
-      font-weight: 700;
-      letter-spacing: .01em;
-      color: var(--ink-700);
-    }
+    h1 { margin: 8px 0 20px; font-size: clamp(22px, 3.2vw, 28px); font-weight: 700; letter-spacing: .01em; color: var(--ink-700); }
 
     .section-header {
-      display: block;
-      margin: 28px 0 12px;
-      padding: 12px 16px;
-      font-weight: 600;
-      font-size: 15px;
-      color: var(--ink-700);
+      display: block; margin: 28px 0 12px; padding: 12px 16px;
+      font-weight: 600; font-size: 15px; color: var(--ink-700);
       background: linear-gradient(180deg, var(--accent-100), #fff);
-      border: 1px solid var(--accent-200);
-      border-radius: var(--r-md);
+      border: 1px solid var(--accent-200); border-radius: var(--r-md);
     }
 
-    .chip {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 12px; font-weight: 600;
-      padding: 4px 10px; border-radius: 999px;
-      border: 1px solid var(--line);
-      color: var(--ink-700);
-      background: #fff;
-      margin-right: 8px;
-    }
+    .chip { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-700); background: #fff; margin-right: 8px; }
     .chip.required { border-color: #ef4444; color: #ef4444; background: #fff5f5; }
     .chip.optional { color: var(--ink-500); }
 
-    .info-text {
-      margin: 8px 0 16px;
-      padding: 12px 14px;
-      background: var(--accent-50);
-      border: 1px dashed var(--accent-200);
-      border-radius: var(--r-md);
-      color: var(--ink-700);
-      font-size: 14px;
-    }
+    .info-text { margin: 8px 0 16px; padding: 12px 14px; background: var(--accent-50); border: 1px dashed var(--accent-200); border-radius: var(--r-md); color: var(--ink-700); font-size: 14px; }
 
-    label.label {
-      display: block;
-      margin: 18px 0 8px;
-      font-weight: 600;
-      color: var(--ink-700);
-      font-size: 14px;
-    }
+    label.label { display: block; margin: 18px 0 8px; font-weight: 600; color: var(--ink-700); font-size: 14px; }
 
     input[type="text"], input[type="tel"], textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      border-radius: var(--r-md);
-      font-size: 16px;
-      background: #fff;
-      color: var(--ink-900);
+      width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-md);
+      font-size: 16px; background: #fff; color: var(--ink-900);
       transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
     }
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--accent-500);
-      box-shadow: 0 0 0 4px rgba(223, 155, 155, .18);
-    }
+    input:focus, textarea:focus { outline: none; border-color: var(--accent-500); box-shadow: 0 0 0 4px rgba(223, 155, 155, .18); }
 
-    .grid-buttons {
-      display: grid; gap: 10px;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      margin: 10px 0 14px;
-    }
+    .grid-buttons { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin: 10px 0 14px; }
 
     .btn-option {
-      appearance: none; cursor: pointer;
-      padding: 12px 14px; min-height: 44px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: var(--r-md);
+      appearance: none; cursor: pointer; padding: 12px 14px; min-height: 44px;
+      background: #fff; border: 1px solid var(--line); border-radius: var(--r-md);
       font-size: 14px; font-weight: 600; color: var(--ink-700);
       display: inline-flex; align-items: center; justify-content: center; text-align: center;
       transition: transform .05s var(--ease), border-color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
@@ -167,42 +102,31 @@
     .postal-input-container { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
 
     .btn-accent {
-      appearance: none; cursor: pointer;
-      padding: 12px 16px; min-height: 44px; width: 100%;
+      appearance: none; cursor: pointer; padding: 12px 16px; min-height: 44px; width: 100%;
       border: 1px solid var(--accent-500);
       background: linear-gradient(180deg, var(--accent-500), var(--accent-600));
-      color: #fff; font-weight: 700; font-size: 16px;
-      border-radius: var(--r-lg);
-      box-shadow: var(--shadow);
-      transition: transform .06s var(--ease), filter .2s var(--ease);
+      color: #fff; font-weight: 700; font-size: 16px; border-radius: var(--r-lg);
+      box-shadow: var(--shadow); transition: transform .06s var(--ease), filter .2s var(--ease);
     }
     .btn-accent:hover { filter: brightness(1.02); }
     .btn-accent:active { transform: translateY(1px); }
     .btn-accent:disabled { opacity: .55; cursor: not-allowed; }
 
     .btn-subtle {
-      appearance: none; cursor: pointer;
-      padding: 12px 14px; min-height: 44px;
-      border: 1px solid var(--line);
-      background: #fff; color: var(--ink-700);
-      border-radius: var(--r-md);
-      font-weight: 600; font-size: 14px;
+      appearance: none; cursor: pointer; padding: 12px 14px; min-height: 44px;
+      border: 1px solid var(--line); background: #fff; color: var(--ink-700);
+      border-radius: var(--r-md); font-weight: 600; font-size: 14px;
       transition: border-color .2s var(--ease), background .2s var(--ease);
     }
     .btn-subtle:hover { background: var(--accent-50); border-color: var(--accent-300); }
 
-    .side-nav {
-      position: fixed; right: 12px; top: 50%; transform: translateY(-50%);
-      background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 8px;
-      box-shadow: var(--shadow);
-    }
+    .side-nav { position: fixed; right: 12px; top: 50%; transform: translateY(-50%); background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 8px; box-shadow: var(--shadow); }
     .side-nav a { display: grid; place-items: center; width: 44px; height: 44px; text-decoration: none; color: var(--ink-700); border-radius: 10px; font-size: 18px; }
     .side-nav a:hover { background: var(--accent-100); }
 
     .error-message { color: #b91c1c; font-size: 13px; margin-top: 6px; }
     .hidden { display: none !important; }
 
-    /* Reduce motion for users who prefer it */
     @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
     @media (max-width: 768px) {
@@ -211,37 +135,25 @@
       .side-nav { right: 8px; }
       .side-nav a { width: 40px; height: 40px; }
     }
-      /* Mobile-first refinements */
     @media (max-width: 640px) {
-      html, body { font-size: 16px; } /* iOSズーム抑止 */
+      html, body { font-size: 16px; }
       body { padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) calc(84px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
       .container { border-radius: 14px; padding: 16px; }
       .grid-buttons { grid-template-columns: 1fr; }
       .side-nav { display: none; }
     }
 
-    /* Bottom fixed submit bar */
     .footer-cta {
       position: fixed; left: 0; right: 0; bottom: 0;
       padding: 10px max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-      background: rgba(255,255,255,.85);
-      backdrop-filter: saturate(140%) blur(10px);
-      border-top: 1px solid var(--line);
-      box-shadow: 0 -6px 24px rgba(17,24,39,.06);
-      z-index: 50;
+      background: rgba(255,255,255,.85); backdrop-filter: saturate(140%) blur(10px);
+      border-top: 1px solid var(--line); box-shadow: 0 -6px 24px rgba(17,24,39,.06); z-index: 50;
     }
     .footer-cta .btn-accent { width: 100%; }
-
-    /* Touch adjustments */
     * { -webkit-tap-highlight-color: transparent; }
     .btn-option, .btn-subtle, .btn-accent { touch-action: manipulation; }
 
-    .container::after {
-        content: "";
-        display: block;
-        height: 140px; /* フッター高さ＋余裕分 */
-    }
-
+    .container::after { content: ""; display: block; height: 140px; }
   </style>
 </head>
 
@@ -256,7 +168,7 @@
 
     <!-- お名前 -->
     <div class="section-header"><span class="chip required">必須</span>お名前をお願いします</div>
-    <p class="info-text">お手数ですがお名前の記載をお願いいたします。</p>
+    <p class="info-text">お手数ですがお名前の記載をお願いいたします。（次回以降自動入力されます）</p>
     <label class="label" for="lastName">姓</label>
     <input type="text" id="lastName" placeholder="姓" autocomplete="family-name" />
     <label class="label" for="firstName">名</label>
@@ -284,21 +196,15 @@
       <button type="button" class="btn-option two" onclick="selectDelivery(this)" aria-pressed="false">店頭受け取り</button>
     </div>
 
-    <!-- 初回注文確認 -->
-    <div class="section-header"><span class="chip required">必須</span>ご注文は初めてですか？</div>
-    <div class="grid-buttons" role="group" aria-label="初回注文かどうか">
-      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, true)" aria-pressed="false">はい</button>
-      <button type="button" class="btn-option first-time" onclick="selectFirstTime(this, false)" aria-pressed="false">いいえ</button>
-    </div>
+    <!-- お届け先情報（常時表示・保存対象） -->
+    <section id="addressSection" aria-live="polite">
+      <div class="section-header">
+        <span class="chip optional">宅配選択時は必須</span>お届け先情報
+      </div>
+      <p class="info-text">次回以降、自動入力されます。店頭受け取りの方は未入力でも可です。</p>
 
-    <!-- 初回注文者向け -->
-    <section id="firstTimeSection" class="hidden" aria-live="polite">
-      <label class="label"><span class="chip required">必須</span>初回のお客様 - お電話番号</label>
-      <p class="info-text">日中にご連絡がつく番号をご記入ください。</p>
+      <label class="label">お電話番号</label>
       <input type="tel" id="phone" inputmode="tel" autocomplete="tel" placeholder="09012345678（ハイフンなし）">
-
-      <label class="label"><span class="chip required">必須</span>初回のお客様 - お届け先住所</label>
-      <p class="info-text">個人情報は適切に管理いたします。<br>ご安心のうえご記入ください。</p>
 
       <label class="label" for="postalCode">郵便番号</label>
       <div class="postal-input-container">
@@ -323,7 +229,7 @@
     <div style="margin-top: 20px;"></div>
   </main>
 
-  <!-- 画面下部に固定の送信バー（スマホ最適化） -->
+  <!-- 画面下部に固定の送信バー -->
   <div class="footer-cta">
     <button class="btn-accent" onclick="submitForm()" id="section-message">送信</button>
   </div>
@@ -333,10 +239,11 @@
   <script>
     let paymentMethod = '';
     let deliveryMethod = '';
-    let isFirstTime = null;
 
     const NAME_KEY = 'orderForm:name';
+    const ADDRESS_KEY = 'orderForm:address'; // 住所＆電話の保存キー
 
+    // ===== ローカル保存：読込 =====
     function loadNameFromStorage() {
       try {
         const raw = localStorage.getItem(NAME_KEY);
@@ -348,7 +255,20 @@
         console.warn('名前の読込に失敗しました', e);
       }
     }
+    function loadAddressFromStorage() {
+      try {
+        const raw = localStorage.getItem(ADDRESS_KEY);
+        if (!raw) return;
+        const obj = JSON.parse(raw);
+        ['phone','postalCode','prefecture','city','address','building'].forEach(id => {
+          if (obj[id]) document.getElementById(id).value = obj[id];
+        });
+      } catch (e) {
+        console.warn('住所の読込に失敗しました', e);
+      }
+    }
 
+    // ===== ローカル保存：保存 =====
     function saveNameToStorage() {
       try {
         const lastName = (document.getElementById('lastName').value || '').trim();
@@ -357,19 +277,30 @@
           localStorage.removeItem(NAME_KEY);
           return;
         }
-        localStorage.setItem(NAME_KEY, JSON.stringify({
-          lastName, firstName, savedAt: Date.now()
-        }));
-      } catch (e) {
-        console.warn('名前の保存に失敗しました', e);
-      }
+        localStorage.setItem(NAME_KEY, JSON.stringify({ lastName, firstName, savedAt: Date.now() }));
+      } catch (e) { console.warn('名前の保存に失敗しました', e); }
+    }
+    function saveAddressToStorage() {
+      try {
+        const obj = {
+          phone: (document.getElementById('phone').value || '').trim(),
+          postalCode: (document.getElementById('postalCode').value || '').trim(),
+          prefecture: (document.getElementById('prefecture').value || '').trim(),
+          city: (document.getElementById('city').value || '').trim(),
+          address: (document.getElementById('address').value || '').trim(),
+          building: (document.getElementById('building').value || '').trim(),
+          savedAt: Date.now()
+        };
+        const anyFilled = Object.values(obj).some(v => typeof v === 'string' ? v.length > 0 : false);
+        if (!anyFilled) {
+          localStorage.removeItem(ADDRESS_KEY);
+          return;
+        }
+        localStorage.setItem(ADDRESS_KEY, JSON.stringify(obj));
+      } catch (e) { console.warn('住所の保存に失敗しました', e); }
     }
 
-    function clearSavedName() {
-      localStorage.removeItem(NAME_KEY);
-    }
-
-    // LIFF初期化
+    // ===== LIFF初期化 =====
     document.addEventListener('DOMContentLoaded', function () {
       if (typeof liff === 'undefined') {
         console.error('LIFF SDK が読み込まれていません。');
@@ -379,57 +310,25 @@
         .then(() => {
           console.log('LIFF初期化成功');
           if (!liff.isLoggedIn()) {
-            // ブラウザ直開き時などはログインを促す
             try { liff.login(); } catch (e) { console.warn('liff.login() 失敗', e); }
           }
         })
         .catch((err) => console.error('LIFF初期化失敗', err));
     });
 
+    // ===== UI選択 =====
     function selectPayment(el) {
-      document.querySelectorAll('.one').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      el.classList.add('active');
-      el.setAttribute('aria-pressed', 'true');
+      document.querySelectorAll('.one').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+      el.classList.add('active'); el.setAttribute('aria-pressed', 'true');
       paymentMethod = el.innerText.trim();
     }
-
     function selectDelivery(el) {
-      document.querySelectorAll('.two').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      el.classList.add('active');
-      el.setAttribute('aria-pressed', 'true');
+      document.querySelectorAll('.two').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+      el.classList.add('active'); el.setAttribute('aria-pressed', 'true');
       deliveryMethod = el.innerText.trim();
     }
 
-    function selectFirstTime(el, firstTime) {
-      document.querySelectorAll('.first-time').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      el.classList.add('active');
-      el.setAttribute('aria-pressed', 'true');
-      isFirstTime = firstTime;
-
-      const sec = document.getElementById('firstTimeSection');
-      if (firstTime) {
-        sec.classList.remove('hidden');
-      } else {
-        sec.classList.add('hidden');
-        // フィールドクリア
-        ['phone','postalCode','prefecture','city','address','building'].forEach(id => {
-          const el2 = document.getElementById(id); if (el2) el2.value = '';
-        });
-        // エラー表示も隠す
-        const err = document.getElementById('postalError');
-        if (err) { err.style.display = 'none'; err.textContent = ''; }
-      }
-    }
-
+    // ===== 住所検索 =====
     async function searchAddress() {
       const postal = document.getElementById('postalCode').value.replace(/[^\d]/g, '');
       const errorDiv = document.getElementById('postalError');
@@ -454,6 +353,7 @@
           document.getElementById('prefecture').value = r.address1;
           document.getElementById('city').value = r.address2 + r.address3;
           document.getElementById('address').focus();
+          saveAddressToStorage();
         } else {
           errorDiv.textContent = '該当する住所が見つかりませんでした。郵便番号をご確認ください。';
           errorDiv.style.display = 'block';
@@ -468,33 +368,45 @@
       }
     }
 
-    // Enter で住所検索 + 名前のローカル保存
+    // ===== 初期化：入力イベント紐付け & ロード =====
     document.addEventListener('DOMContentLoaded', () => {
+      // 郵便番号：Enter検索 & 数値のみ
       const pc = document.getElementById('postalCode');
       if (pc) {
         pc.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchAddress(); });
-        pc.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^\d]/g, ''); });
+        pc.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^\d]/g, ''); saveAddressToStorage(); });
       }
 
-      loadNameFromStorage();
-
+      // 名前の自動保存
       const ln = document.getElementById('lastName');
       const fn = document.getElementById('firstName');
-      ln.addEventListener('change', saveNameToStorage);
-      fn.addEventListener('change', saveNameToStorage);
-      ln.addEventListener('input', saveNameToStorage);
-      fn.addEventListener('input', saveNameToStorage);
+      ['change','input'].forEach(ev => {
+        ln.addEventListener(ev, saveNameToStorage);
+        fn.addEventListener(ev, saveNameToStorage);
+      });
+
+      // 住所系の自動保存
+      ['phone','prefecture','city','address','building'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) ['change','input'].forEach(ev => el.addEventListener(ev, saveAddressToStorage));
+      });
+
+      // 既存保存値をロード
+      loadNameFromStorage();
+      loadAddressFromStorage();
     });
 
+    // ===== 送信 =====
     function submitForm() {
       saveNameToStorage();
+      saveAddressToStorage();
+
       const formData = {
         lastName: document.getElementById('lastName').value.trim(),
         firstName: document.getElementById('firstName').value.trim(),
         orderDetails: document.getElementById('orderDetails').value.trim(),
         paymentMethod,
         deliveryMethod,
-        isFirstTime,
         phone: document.getElementById('phone')?.value.trim() || '',
         postalCode: document.getElementById('postalCode')?.value.trim() || '',
         prefecture: document.getElementById('prefecture')?.value.trim() || '',
@@ -507,30 +419,33 @@
       if (!formData.lastName || !formData.firstName) { alert('お名前（姓・名）を入力してください。'); return; }
       if (!formData.paymentMethod) { alert('お支払い方法を選択してください。'); return; }
       if (!formData.deliveryMethod) { alert('お届け方法を選択してください。'); return; }
-      if (formData.isFirstTime === null) { alert('初回注文かどうかを選択してください。'); return; }
 
-      if (formData.isFirstTime) {
-        if (!formData.phone) { alert('初回のお客様は電話番号の入力が必要です。'); return; }
+      // 宅配の場合のみ、住所＆電話を必須
+      const isDelivery = formData.deliveryMethod.includes('宅配');
+      if (isDelivery) {
+        if (!formData.phone) { alert('宅配を選択された場合、電話番号は必須です。'); return; }
         if (!formData.postalCode || !formData.prefecture || !formData.city || !formData.address) {
-          alert('初回のお客様は住所情報の入力が必要です。'); return;
+          alert('宅配を選択された場合、住所情報（郵便番号・都道府県・市区町村・番地）は必須です。'); return;
         }
       }
 
-      let messageText = '≪ご注文内容≫\n' +
+      let messageText =
+        '≪ご注文内容≫\n' +
         '【お名前】\n' + formData.lastName + ' ' + formData.firstName + '\n\n' +
         '【ご注文内容】\n' + (formData.orderDetails || '記載なし') + '\n\n' +
         '【お支払い方法】\n' + formData.paymentMethod + '\n\n' +
-        '【お届け方法】\n' + formData.deliveryMethod + '\n\n' +
-        '【初回注文】\n' + (formData.isFirstTime ? 'はい' : 'いいえ') + '\n\n';
+        '【お届け方法】\n' + formData.deliveryMethod + '\n\n';
 
-      if (formData.isFirstTime) {
-        messageText += '【お電話番号】\n' + formData.phone + '\n\n' +
-          '【お届け先住所】\n' + '〒' + formData.postalCode + '\n' +
-          formData.prefecture + formData.city + '\n' +
-          formData.address + '\n' + (formData.building || '');
+      // 住所関連は入力があれば同梱（宅配時は必須通過済み）
+      if (formData.phone || formData.postalCode || formData.prefecture || formData.city || formData.address || formData.building) {
+        messageText +=
+          '【お電話番号】\n' + (formData.phone || '記載なし') + '\n\n' +
+          '【お届け先住所】\n' +
+          (formData.postalCode ? ('〒' + formData.postalCode + '\n') : '') +
+          (formData.prefecture || '') + (formData.city || '') + '\n' +
+          (formData.address || '') + '\n' + (formData.building || '');
       }
 
-      // LIFF送信ガード
       if (typeof liff === 'undefined' || !liff.isApiAvailable || !liff.isApiAvailable('sendMessages')) {
         alert('LIFFメッセージ送信が利用できない環境です。LINE内から再度お試しください。');
         return;
