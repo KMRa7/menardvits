@@ -412,6 +412,16 @@
       }, 3000);
     });
 
+    function canSendViaChat() {
+      try {
+        if (typeof liff === 'undefined' || !liff.isInClient()) return false;
+        const ctx = liff.getContext && liff.getContext();
+        return ctx && ctx.type && ctx.type !== 'none'; // utou / room / group ならOK
+      } catch (_) {
+        return false;
+      }
+    }
+    
     // ===== 送信 =====
     async function submitForm() {
       // LIFFの準備がなくても押せる設計。中でフォールバック分岐。
@@ -463,27 +473,26 @@
         );
 
       try {
-        if (typeof liff !== 'undefined' && window.__liffReady && liff.isInClient()) {
-          // LINEアプリ内 → sendMessages
+        if (canSendViaChat()) {
           await liff.sendMessages([{ type: 'text', text: messageText }]);
           alert('ご注文ありがとうございます。内容を確認次第、ご連絡いたします。');
           liff.closeWindow();
           return;
         }
-
+    
+        // LINE内だがトーク外 / または外部ブラウザ → shareTargetPicker が使えればそちら
         if (typeof liff !== 'undefined' && liff.isApiAvailable && liff.isApiAvailable('shareTargetPicker')) {
-          // 外部ブラウザ → shareTargetPicker
           await liff.shareTargetPicker([{ type: 'text', text: messageText }]);
           alert('ご注文内容をLINEで共有しました。店舗側でも確認します。');
           return;
         }
-
-        // 最終フォールバック：クリップボードへコピー
+    
+        // 最終フォールバック：コピー
         await navigator.clipboard.writeText(messageText);
-        alert('現在の環境では自動送信ができませんでした。内容をコピーしましたので、LINEトークに貼り付けて送信してください。');
+        alert('この画面はトーク外で開いています。トーク内のリッチメニューから開き直すか、コピーした内容をトークに貼り付けて送信してください。');
       } catch (err) {
         console.error('メッセージ送信失敗', err);
-        alert('送信に失敗しました。LINEアプリ内から開き直すか、再度お試しください。');
+        alert('送信に失敗しました。LINEアプリ内のトークから開き直すか、再度お試しください。');
       }
     }
   </script>
